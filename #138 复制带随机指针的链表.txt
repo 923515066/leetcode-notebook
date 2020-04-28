@@ -1,0 +1,68 @@
+/*
+// Definition for a Node.
+class Node {
+    int val;
+    Node next;
+    Node random;
+
+    public Node(int val) {
+        this.val = val;
+        this.next = null;
+        this.random = null;
+    }
+}
+*/
+
+class Solution {
+    public Node copyRandomList(Node head) {
+        if (head == null) {
+            return null;
+        }
+        Node curr = head;
+        Node copyCurr = null;
+        Node copyPre = null;
+        Node copyHead = null;
+        Node temp = null;
+        // 第一层循环深拷贝，只拷贝next引用。同时原链表的next引用指向一个临时节点，临时节点的next引用指向该节点的原next引用，random
+        // 引用指向深拷贝的该节点，临时节点将原节点和拷贝节点联系起来
+        while (curr != null) {
+            copyCurr = new Node(curr.val);
+            if (copyPre != null) {
+                copyPre.next = copyCurr;
+            }
+            if (copyHead == null) {
+                copyHead = copyCurr;
+            }
+            copyPre = copyCurr;
+
+            temp = new Node(0);
+            temp.next = curr.next;
+            temp.random = copyPre;
+            curr.next = temp;
+            curr = temp.next;
+            temp = null;
+        }
+        // 第二层循环利用临时节点获取random引用对应的新拷贝节点
+        copyCurr = copyHead;
+        curr = head;
+        while (copyCurr != null) {
+            if (curr.random != null) {
+                copyCurr.random = curr.random.next.random;
+            } else {
+                copyCurr.random = null;
+            }
+            copyCurr = copyCurr.next;
+            curr = curr.next.next;
+        }
+        // 第三层循环恢复原始节点的next引用
+        curr = head;
+        while (curr != null) {
+            curr.next = curr.next.next;
+            curr = curr.next;
+        }
+
+        return copyHead;
+
+
+    }
+}
