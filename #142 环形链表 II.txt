@@ -1,0 +1,103 @@
+方法1
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode node1 = head;
+        ListNode node2 = head;
+        // node1一次走1步 node2一次走2步  若相遇节点在环中
+        while (node2 != null) {
+            node1 = node1.next;
+            node2 = node2.next;
+            if (node2 != null) {
+                node2 = node2.next;
+                if (node2 == null) {
+                    return null;
+                }
+                if (node1 == node2) {
+                    break;
+                }
+            } else {
+                return null;
+            }
+        }
+        // node2 node1在同一起点 node2一次两步 node1一次一步 计算环里的节点数量
+        int circleNum;
+        node2 = node2.next;
+        for (circleNum = 1; node1 != node2; circleNum++) {
+            node1 = node1.next;
+            node2 = node2.next.next;
+        }
+
+        node1 = head;
+        node2 = head;
+		// 提前走“环的数量”步数，会在入口处相遇
+        for (; circleNum > 0; circleNum--) {
+            node2 = node2.next;
+        }
+        while (node1 != node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+        node2 = null;
+        return node1;
+    }
+}
+
+方法2
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode node1 = head;
+        ListNode node2 = head;
+        // node1一次走1步 node2一次走2步  若相遇节点在环中
+        while (node2 != null) {
+            node1 = node1.next;
+            node2 = node2.next;
+            if (node2 != null) {
+                node2 = node2.next;
+                if (node2 == null) {
+                    return null;
+                }
+                if (node1 == node2) {
+                    break;
+                }
+            } else {
+                return null;
+            }
+        }
+        // 假设慢点走了a+b步(环外a步环内b步)，显然快点就走了 2 * (a + b)步，环的长度为a + b，慢点环中剩余路程为a
+        // 则从头节点和慢点处共行a步后会在入口处相遇
+        node2 = head;
+        while (node1 != node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+        return node1;
+    }
+}
