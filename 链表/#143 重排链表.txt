@@ -6,6 +6,9 @@
  *     ListNode(int x) { val = x; }
  * }
  */
+ // 获得链表中点记得用快慢指针；
+ //链表截断时记得短尾；
+ //获取后半段倒序  链表反转速度比使用栈快
  import java.util.Stack;
 class Solution {
     public void reorderList(ListNode head) {
