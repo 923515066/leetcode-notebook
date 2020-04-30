@@ -1,0 +1,66 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+ // 考虑代码简洁度可以去掉后两层循环，把第一层循环的判断的&&修改为|| 但是每次都要额外判断l1 l2是否为null
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int carry = 0;
+        ListNode sumNode =null;
+        ListNode sumListHead = null;
+        while (l1 != null && l2 != null) {
+            if (sumNode == null) {
+                sumNode = new ListNode(0);
+                sumListHead = sumNode;
+            } else {
+                sumNode.next = new ListNode(0);
+                sumNode = sumNode.next;
+            }
+            if (l1.val + l2.val + carry >=10) {
+                sumNode.val = l1.val + l2.val + carry - 10;
+                carry = 1;
+            }
+            else {
+                sumNode.val = l1.val + l2.val + carry;
+                carry = 0;
+            }
+            l1 = l1.next;
+            l2 = l2.next;
+        }
+        while (l1 != null) {
+            sumNode.next = new ListNode(0);
+            sumNode = sumNode.next;
+            if (l1.val + carry >=10) {
+                sumNode.val = l1.val + carry - 10;
+                carry = 1;
+            }
+            else {
+                sumNode.val = l1.val + carry;
+                carry = 0;
+            }
+            l1 = l1.next;
+        }
+        while (l2 != null) {
+            sumNode.next = new ListNode(0);
+            sumNode = sumNode.next;
+            if (l2.val + carry >=10) {
+                sumNode.val = l2.val + carry - 10;
+                carry = 1;
+            }
+            else {
+                sumNode.val = l2.val + carry;
+                carry = 0;
+            }
+            l2 = l2.next;
+        }
+        if (carry == 1) {
+            sumNode.next = new ListNode(1);
+            sumNode = sumNode.next;
+        }
+        return sumListHead;
+    }
+}
