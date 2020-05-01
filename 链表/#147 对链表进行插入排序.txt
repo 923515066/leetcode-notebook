@@ -1,0 +1,42 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    // 迭代指针iterator从head开始遍历，知道next比curr大时在此处插入curr
+    // 由于要交换curr的位置，需要记录curr的上一个节点pre
+    // 第一种特殊情况 curr比pre大 直接不用比较 极大减少比较次数(!!!)
+    // 第二种 curr比head小 也不用比较  减少比较次数
+    public ListNode insertionSortList(ListNode head) {
+        if (head == null) return null;
+        ListNode iterator = null;
+        ListNode curr = head.next;
+        ListNode pre = head;
+        while (curr != null) {
+            if (curr.val >= pre.val) {
+                pre = curr;
+                curr = curr.next;
+            }
+            else if (head.val > curr.val) {
+                pre.next = curr.next;
+                curr.next = head;
+                head = curr;
+                curr = pre.next;
+            } else {
+                iterator = head;
+                while (iterator.next.val <= curr.val) {
+                    iterator = iterator.next;
+                }
+                pre.next = curr.next;
+                curr.next = iterator.next;
+                iterator.next = curr;
+                curr = pre.next;
+            }
+        }
+        return head;
+    }
+}

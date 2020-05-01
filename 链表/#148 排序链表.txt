@@ -1,0 +1,147 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+//  递归方法 merge排序 时间复杂度满足nlogn，空间复杂度因为递归logn层不满足常数要求
+class Solution {
+    public ListNode sortList(ListNode head) {
+        // 外部输入null
+        if (head == null) return null;
+        // 只剩一个节点  递归结束
+        if (head.next == null) {
+            return head;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        // 寻找中间节点
+        while (fast != null) {
+            if (fast.next != null && fast.next.next != null) {
+                slow = slow.next;
+                fast = fast.next.next;
+            } else {
+                break;
+            }
+        }
+        fast = null;
+        ListNode headOfSecondPart = slow.next;
+        slow.next = null;
+        slow = null;
+
+        // 递归获取排序后 前后半段链表 并进行有序合并
+        return mergeTwoLists(sortList(head), sortList(headOfSecondPart));
+    }
+    // 21 合并链表
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        // 链表问题可以考虑创建一个preHead,可以减少对特殊情况的判断,最后返回时返回next就行
+        ListNode preHead = new ListNode(0);
+        ListNode curr = preHead;
+        // 使用&&判断 l1或者l2剩下的直接接到新链表后
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                curr.next = l1;
+                l1 =l1.next;
+            } else {
+                curr.next = l2;
+                l2 =l2.next;
+            }
+            curr = curr.next;
+        }
+        curr.next = (l1 == null)?l2:l1;
+        return preHead.next;
+    }
+}
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+//  迭代方法 也是merge排序
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        // 获取链表长度
+        int len = listNodeLength(head);
+
+        // 哨兵节点，也有叫傀儡节点（处理链表问题的一般技巧）
+        ListNode sentry = new ListNode(-1);
+        sentry.next = head;
+
+        // logn次
+        for(int i = 1; i < len; i<<=1) {
+            ListNode pre = sentry;
+            ListNode curr = sentry.next;
+            // 每次遍历n个节点
+            while (curr != null) {
+                ListNode left = curr;
+                ListNode right = split(left, i);
+                curr = split(right, i);
+                pre.next = mergeTwoLists(left, right);
+
+                while (pre.next != null) {
+                    pre = pre.next;
+                }
+            }
+        }
+        return sentry.next;
+
+
+    }
+    // 根据步长分隔链表
+    private ListNode split(ListNode head, int step) {
+        if (head == null) return null;
+        // 注意i为1且判断的是next
+        // 我们要遍历到下一部分链表的前一个节点
+        for (int i = 1; head.next != null && i < step; i++) {
+            head = head.next;
+        }
+
+        ListNode right = head.next;
+        // 链表断开 否则会出现环
+        head.next = null;
+        return right;
+    }
+
+    // 获取链表的长度
+    private int listNodeLength(ListNode head) {
+        int length = 0;
+        ListNode curr = head;
+
+        while (curr != null) {
+            length++;
+            curr = curr.next;
+        }
+
+        return length;
+    }
+
+    // 21 合并链表
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        // 链表问题可以考虑创建一个preHead,可以减少对特殊情况的判断,最后返回时返回next就行
+        ListNode preHead = new ListNode(0);
+        ListNode curr = preHead;
+        // 使用&&判断 l1或者l2剩下的直接接到新链表后
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                curr.next = l1;
+                l1 =l1.next;
+            } else {
+                curr.next = l2;
+                l2 =l2.next;
+            }
+            curr = curr.next;
+        }
+        curr.next = (l1 == null)?l2:l1;
+        return preHead.next;
+    }
+}

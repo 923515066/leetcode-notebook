@@ -1,0 +1,28 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        // 链表问题可以考虑创建一个preHead,可以减少对特殊情况的判断,最后返回时返回next就行
+        ListNode preHead = new ListNode(0);
+        ListNode curr = preHead;
+        // 使用&&判断 l1或者l2剩下的直接接到新链表后
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                curr.next = l1;
+                l1 =l1.next;
+            } else {
+                curr.next = l2;
+                l2 =l2.next;
+            }
+            curr = curr.next;
+        }
+        curr.next = (l1 == null)?l2:l1;
+        return preHead.next;
+    }
+}
