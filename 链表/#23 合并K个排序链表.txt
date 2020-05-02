@@ -1,0 +1,74 @@
+合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
+
+示例:
+
+输入:
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+输出: 1->1->2->3->4->4->5->6
+
+// 递归法分而治之，每次把数组分为两部分，然后使用合并两个有序列表的算法合并递归调用返回的两部分
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+        return mergeCore(lists, 0, lists.length -1);
+    }
+    public ListNode mergeCore(ListNode[]lists, int index1, int index2) {
+        if (index1 == index2) return lists[index1];
+        else if (index1 + 1 == index2) return mergeTwoLists(lists[index1], lists[index2]);
+        else {
+            int tailIndexOfFirstPart = (index1 + index2) >>1;
+            return mergeTwoLists(mergeCore(lists, index1, tailIndexOfFirstPart), mergeCore(lists, tailIndexOfFirstPart + 1, index2));
+        }
+    }
+    // 21 合并两个有序列表
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        // 链表问题可以考虑创建一个preHead,可以减少对特殊情况的判断,最后返回时返回next就行
+        ListNode preHead = new ListNode(0);
+        ListNode curr = preHead;
+        // 使用&&判断 l1或者l2剩下的直接接到新链表后
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                curr.next = l1;
+                l1 =l1.next;
+            } else {
+                curr.next = l2;
+                l2 =l2.next;
+            }
+            curr = curr.next;
+        }
+        curr.next = (l1 == null)?l2:l1;
+        return preHead.next;
+    }
+}
+
+//  使用优先级队列(堆) 但是用时好像也一般般
+// 先插入所有头节点，然后一次从队列里poll出来，再插入该节点的next，直到队列为空
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+        PriorityQueue<ListNode> priorityQueue = new PriorityQueue<ListNode>((l1, l2) ->{
+            return l1.val - l2.val;
+        });
+        ListNode sentry = new ListNode(0);
+        ListNode curr = sentry;
+
+        for (ListNode node : lists) {
+            if (node != null) {
+                priorityQueue.add(node);
+            }
+        }
+
+        while (!priorityQueue.isEmpty()) {
+            curr.next = priorityQueue.poll();
+            curr = curr.next;
+            if (curr.next != null) {
+                priorityQueue.add(curr.next);
+            }
+        }
+        return sentry.next;
+    }
+}

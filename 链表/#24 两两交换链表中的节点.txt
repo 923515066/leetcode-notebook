@@ -1,0 +1,52 @@
+给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+ 
+示例:
+
+给定 1->2->3->4, 你应该返回 2->1->4->3.
+
+// 迭代法，使用哨兵指针，注意前后指针的判空
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode sentry = new ListNode(0);
+        sentry.next = head;
+        ListNode pre = sentry;
+        ListNode curr1 = head;
+        ListNode curr2 = curr1.next;
+        ListNode post = curr2.next;
+        while (true) {
+            pre.next = curr2;
+            curr2.next = curr1;
+            curr1.next = post;
+
+            pre = curr1;
+            curr1 = post;
+            if (curr1 == null || curr1.next == null) break;
+            else {
+                curr2 = curr1.next;
+                post = curr2.next;
+            }
+        }
+        return sentry.next;
+    }
+}
+
+// 递归法
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        //递归
+        ListNode l1 = head;
+        ListNode l2 = (head == null)?null:head.next;
+        if (l1 != null && l2 != null) {
+            l1.next = swapPairs(l2.next);
+            l2.next = l1;
+            return l2;
+        } else {
+            return l1;
+        }
+    }
+}
+
