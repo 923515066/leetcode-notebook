@@ -1,0 +1,30 @@
+分割链表
+输入链表头head  和 值x
+比x小的节点都排在大于或者等于x的节点左边即可。排列顺序不唯一
+
+输入: head = 3->5->8->5->10->2->1, x = 5
+输出: 3->1->2->10->5->5->8
+
+// 使用pre curr两个节点同时 遍历，如果值小于x则curr插入头部，pre指向curr的next节点
+
+class Solution {
+    public ListNode partition(ListNode head, int x) {
+        ListNode sentry = new ListNode(0);
+        sentry.next = head;
+        ListNode pre = sentry;
+        ListNode curr = head;
+        while (curr != null) {
+            if (curr.val >= x || curr == head) {
+                pre = pre.next;
+                curr = curr.next;
+            } else {
+                pre.next = curr.next;
+                curr.next = head;
+                sentry.next = curr;
+                head = curr;
+                curr = pre.next;
+            }
+        }
+        return sentry.next;
+    }
+}

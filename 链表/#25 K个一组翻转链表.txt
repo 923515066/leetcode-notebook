@@ -1,0 +1,102 @@
+给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+
+k 是一个正整数，它的值小于或等于链表的长度。
+
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+ 
+
+示例：
+
+给你这个链表：1->2->3->4->5
+
+当 k = 2 时，应当返回: 2->1->4->3->5
+
+当 k = 3 时，应当返回: 3->2->1->4->5
+
+ 
+
+说明：
+
+你的算法只能使用常数的额外空间。
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+
+//  递归法 但是使用了O(n)的栈空间
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || k == 1) return head;
+        ListNode sentry = new ListNode(0);
+        sentry.next = reverseList(head, k);
+        return sentry.next;
+
+    }
+
+    // 递归函数，返回当前反转链表的头节点，
+    public ListNode reverseList(ListNode head, int k) {
+        ListNode test = head;
+        for (int i = 1; i < k && test != null; i++) {
+            test = test.next;
+        }
+        if (test == null) return head;
+
+        ListNode pre = null;
+        ListNode next;
+        ListNode curr = head;
+        for (int i = 0; i < k; i++) {
+            next = curr.next;
+            curr.next = pre;
+            pre = curr;
+            curr = next;
+        }
+		// 递归和迭代的区别在这一步 切换到递归函数外部循环执行
+		// 递归调用：尾节点(反转前的头节点)指向下一段反转链表的头节点
+        head.next = reverseList(curr, k);
+        return pre;
+
+    }
+}
+
+//  迭代法  while循环中每次调用反转函数后判断是否完成反转(pre的next节点不是curr则完成反转)
+// 若无执行反转，说明链表遍历结束，退出循环
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || k == 1) return head;
+        ListNode sentry = new ListNode(0);
+        sentry.next = head;
+        ListNode pre = sentry;
+        ListNode curr = head;
+        while (true) {
+            pre.next = reverseList(curr, k);
+            if (pre.next == curr) break;
+            else {
+                pre = curr;
+                curr = curr.next;
+            }
+        }
+        return sentry.next;
+        
+
+    }
+    // head指针在反转后指向尾节点 它的next指针需要指向下一次反转的头节点
+    public ListNode reverseList(ListNode head, int k) {
+        ListNode test = head;
+        for (int i = 1; i < k && test != null; i++) {
+            test = test.next;
+        }
+        if (test == null) return head;
+
+        ListNode pre = null;
+        ListNode next;
+        ListNode curr = head;
+        for (int i = 0; i < k; i++) {
+            next = curr.next;
+            curr.next = pre;
+            pre = curr;
+            curr = next;
+        }
+        head.next = curr;
+        return pre;
+
+    }
+}

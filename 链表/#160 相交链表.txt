@@ -1,0 +1,42 @@
+找到两个单链表相交的起始节点，没有则返回null
+
+// 总体思路类似142环形链表，把任意链表尾部节点指向另一链表的头节点，然后同142
+// 这里要求原链表结构不能更改，所以要记录修改next的那个尾部节点的next最后要重新指向null
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) return null;
+        // 遍历链表B 尾节点指向链表A的头节点
+        ListNode tailB = headB;
+        while (tailB.next != null) {
+            tailB = tailB.next;
+        }
+        tailB.next = headA;
+
+        // 判断有无环
+        ListNode slow = headB;
+        ListNode fast = headB;
+        while (true) {
+            if (fast.next != null && fast.next.next != null) {
+                slow = slow.next;
+                fast = fast.next.next;
+                if (slow == fast) {
+                    break;
+                }
+            }else {
+                tailB.next = null;
+                return null;
+            }
+        }
+
+        // 有环
+        // fast回到头节点，依据#142推论，和slow在相遇节点一人一步 最终会在环的第一个节点再次相遇
+        fast = headB;
+        while (fast != slow) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        tailB.next = null;
+        return slow;
+
+    }
+}
