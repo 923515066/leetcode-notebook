@@ -1,0 +1,162 @@
+给你两个 非空 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
+
+你可以假设除了数字 0 之外，这两个数字都不会以零开头。
+
+ 
+
+进阶：
+
+如果输入链表不能修改该如何处理？换句话说，你不能对列表中的节点进行翻转。
+
+ 
+
+示例：
+
+输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+输出：7 -> 8 -> 0 -> 7
+
+
+
+//  先反转链表，再求和(这里必须使用大数求和的思想，否则会溢出)
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        l1 = reverse(l1);
+        l2 = reverse(l2);
+        int carry = 0;
+        ListNode pre = null;
+        ListNode curr = null;
+        while (l1 != null && l2 != null) {
+            if (l1.val + l2.val + carry >= 10) {
+                curr = new ListNode(l1.val + l2.val + carry - 10);
+                carry = 1;
+            } else {
+                curr = new ListNode(l1.val + l2.val + carry);
+                carry = 0;
+            }
+            l1 = l1.next;
+            l2 = l2.next;
+            curr.next = pre;
+            pre = curr;
+        }
+        while (l1 != null) {
+            if (l1.val + carry >= 10) {
+                curr = new ListNode(l1.val + carry - 10);
+                carry = 1;
+            } else {
+                curr = new ListNode(l1.val + carry);
+                carry = 0;
+            }
+            l1 = l1.next;
+            curr.next = pre;
+            pre = curr;
+        }
+        while (l2 != null) {
+            if (l2.val + carry >= 10) {
+                curr = new ListNode(l2.val + carry - 10);
+                carry = 1;
+            } else {
+                curr = new ListNode(l2.val + carry);
+                carry = 0;
+            }
+            l2 = l2.next;
+            curr.next = pre;
+            pre = curr;
+        }
+        if (carry == 1) {
+            curr = new ListNode(1);
+            curr.next = pre;
+        }
+        return curr;
+
+
+    }
+
+    public ListNode reverse(ListNode head) {
+        if (head == null) return null;
+        ListNode pre = null;
+        ListNode curr = head;
+        ListNode next = head.next;
+
+        while(curr != null) {
+            next = curr.next;
+            curr.next = pre;
+            pre = curr;
+            curr = next;
+        }
+        return pre;
+    }
+}
+
+
+// 进阶 不反转链表
+// 递归方法，但是要补全至链表长度相同
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int len1 = getListLength(l1);
+        int len2 = getListLength(l2);
+        // 这里引用要先实例化，不然作为参数传入递归函数会拷贝引用，就丢失了
+        ListNode newListHead = new ListNode(0);
+        int carry;
+        // 链表长度差异 补0
+        if (len1 > len2) {
+            carry = addTwoCore(l1, getCompleteHead(l2, len1 - len2), newListHead);
+        } else if (len1 < len2) {
+            carry = addTwoCore(getCompleteHead(l1, len2 - len1), l2, newListHead);
+        } else {
+            carry = addTwoCore(l1, l2, newListHead);
+        }
+        // 链表头部是否还有进位
+        if (carry == 1) {
+            ListNode node = new ListNode(1);
+            node.next = newListHead;
+            return node;
+        }
+        return newListHead;
+
+
+
+    }
+
+    // 递归函数
+    public int addTwoCore(ListNode l1, ListNode l2, ListNode newNode) {
+        // 下一位的进位
+        int nextCarry = 0;
+        ListNode next = null;
+        // 这里要判断是否还有下一个节点，不然最后链表会多出一个节点
+        if (l1.next != null) {
+            next = new ListNode(0);
+            nextCarry = addTwoCore(l1.next, l2.next, next);
+        }
+        newNode.next = next;
+        if (l1.val + l2.val + nextCarry >= 10) {
+            newNode.val = l1.val + l2.val + nextCarry - 10;
+            return 1;
+        } else {
+            newNode.val = l1.val + l2.val + nextCarry;
+            return 0;
+        }
+
+    }
+
+    public int getListLength(ListNode head) {
+        int len = 0;
+        ListNode curr = head; 
+        while (curr != null) {
+            len++;
+            curr = curr.next;
+        }
+        return len;
+    }
+    // 链表补全至长度相等
+    public ListNode getCompleteHead(ListNode head, int len) {
+        ListNode next = head;
+        ListNode curr = null;
+        for (int i = 0; i < len; i++) {
+            curr = new ListNode(0);
+            curr.next = next;
+            next = curr;
+        }
+        return curr;
+    }
+
+}
