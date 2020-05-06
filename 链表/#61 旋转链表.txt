@@ -1,0 +1,105 @@
+给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+
+示例 1:
+
+输入: 1->2->3->4->5->NULL, k = 2
+输出: 4->5->1->2->3->NULL
+解释:
+向右旋转 1 步: 5->1->2->3->4->NULL
+向右旋转 2 步: 4->5->1->2->3->NULL
+示例 2:
+
+输入: 0->1->2->NULL, k = 4
+输出: 2->0->1->NULL
+解释:
+向右旋转 1 步: 2->0->1->NULL
+向右旋转 2 步: 1->2->0->NULL
+向右旋转 3 步: 0->1->2->NULL
+向右旋转 4 步: 2->0->1->NULL
+
+
+// 方法1 先求链表长度 若k超过则取模，注意判断取模结果特殊值(是否为0)
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null) return head;
+        int len = getListLength(head);
+        // 计算翻转的节点数 超过链表长度取模
+        int rotateTimes = k % len;
+        if (rotateTimes == 0) return head;
+        ListNode curr = head;
+        ListNode rotateHead = null;
+        // 走到反转部分的前一个节点
+        for (int i = 0; i < len - rotateTimes - 1; i++) {
+            curr = curr.next;
+        }
+        rotateHead = curr.next;
+        curr.next = null;
+
+        ListNode rotateTail = rotateHead;
+        while (rotateTail.next != null) {
+            rotateTail = rotateTail.next;
+        }
+        rotateTail.next = head;
+        head = rotateHead;
+        return head;
+
+
+    }
+
+    public int getListLength(ListNode head) {
+        int i = 0;
+        ListNode curr = head;
+        while (curr != null) {
+            curr = curr.next;
+            i++;
+        }
+        return i;
+    }
+}
+
+//方法2 快慢指针 快指针先走k步 分为：还未走到尾节点，刚好到尾节点，和k超出链表长度三种情况
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null) return head;
+        ListNode slow = head;
+        ListNode fast = head;
+        // 如果k >= 链表长度 preSteps为链表长度
+        int preSteps = 0;
+        for (; preSteps < k && fast != null; preSteps++ ) {
+            fast = fast.next;
+        }
+        if (fast != null) {
+            while (fast.next != null) {
+                slow = slow.next;
+                fast = fast.next;
+            }
+            fast.next = head;
+            head = slow.next;
+            slow.next = null;
+            return head;
+        } else if (preSteps == k) {
+            return head;
+        } else {
+            // 计算翻转的节点数 超过链表长度取模
+            int rotateTimes = k % preSteps;
+            if (rotateTimes == 0) return head;
+            ListNode curr = head;
+            ListNode rotateHead = null;
+            // 走到反转部分的前一个节点
+            for (int i = 0; i < preSteps - rotateTimes - 1; i++) {
+                curr = curr.next;
+            }
+            rotateHead = curr.next;
+            curr.next = null;
+
+            ListNode rotateTail = rotateHead;
+            while (rotateTail.next != null) {
+                rotateTail = rotateTail.next;
+            }
+            rotateTail.next = head;
+            head = rotateHead;
+            return head;
+        }
+    }
+
+}
