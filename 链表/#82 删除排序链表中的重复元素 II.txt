@@ -1,0 +1,38 @@
+给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中 没有重复出现 的数字。
+
+示例 1:
+
+输入: 1->2->3->3->4->4->5
+输出: 1->2->5
+示例 2:
+
+输入: 1->1->1->2->3
+输出: 2->3
+
+//需要注意断尾
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode sentry = new ListNode(0);
+        ListNode curr = sentry;
+
+        ListNode temp1 = head;
+        ListNode temp2;
+
+        while (temp1 != null) {
+            // 遍历至重复部分的尾结点
+            temp2 = temp1;
+            while (temp2.next != null && temp2.next.val == temp2.val) {
+                temp2 = temp2.next;
+            }
+
+            if (temp1 == temp2) {
+                curr.next = temp1;
+                curr = curr.next;
+            }
+            temp1 = temp2.next;
+        }
+        // 断尾(特殊情况：链表最后一段是重复的，没有放入新链表中)
+        curr.next = null;
+        return sentry.next;
+    }
+}
