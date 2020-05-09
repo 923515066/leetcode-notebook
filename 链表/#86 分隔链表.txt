@@ -1,0 +1,79 @@
+给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+
+你应当保留两个分区中每个节点的初始相对位置。
+
+示例:
+
+输入: head = 1->4->3->2->5->2, x = 3
+输出: 1->2->2->4->3->5
+
+
+
+//  找到第一个值大于等于x的节点，把该节点后面所有小于x的节点插入该节点前
+class Solution {
+    public ListNode partition(ListNode head, int x) {
+        ListNode sentry = new ListNode(0);
+        sentry.next = head;
+
+        ListNode pre = sentry;
+        ListNode curr = head;
+        // 找到第一个值>=x的节点
+        while (curr != null && curr.val < x) {
+            pre = pre.next;
+            curr = curr.next;
+        }
+
+        if (curr == null) return sentry.next;
+
+        // 往后开始遍历，若节点的值小于x 将节点插入第一个值>=x的节点(也就是curr)前
+        ListNode index1 = curr;
+        ListNode index2 = curr.next;
+        while (index2 != null) {
+            if (index2.val < x) {
+                // 抽出index2
+                index1.next = index2.next;
+                // index2插入pre节点后
+                index2.next = pre.next;
+                pre.next = index2;
+                pre = index2;
+
+                index2 = index1.next;
+            } else {
+                index1 = index1.next;
+                index2 = index2.next;
+            }
+        }
+        return sentry.next;
+    }
+}
+
+
+//  将链表拆分成两个子链表
+class Solution {
+    public ListNode partition(ListNode head, int x) {
+        if (head == null) {
+            return head;
+        }
+        ListNode fakeHead1 = new ListNode(0);
+        ListNode fakeHead2 = new ListNode(0);
+        ListNode pre1 = fakeHead1;
+        ListNode pre2 = fakeHead2;
+        while (head != null) {
+            if (head.val < x) {
+                pre1.next = head;
+                head = head.next;
+                pre1 = pre1.next;
+                // 断尾
+                pre1.next = null;
+            } else {
+                pre2.next = head;
+                head = head.next;
+                pre2 = pre2.next;
+                // 断尾
+                pre2.next = null;
+            }
+        }
+        pre1.next = fakeHead2.next;
+        return fakeHead1.next;
+    }
+}

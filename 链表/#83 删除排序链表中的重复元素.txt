@@ -1,0 +1,27 @@
+给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+
+示例 1:
+
+输入: 1->1->2
+输出: 1->2
+示例 2:
+
+输入: 1->1->2->3->3
+输出: 1->2->3
+
+
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode curr = head;
+        while (curr != null) {
+			// 下一节点不为null且值和当前节点相同时跳过
+            if (curr.next != null && curr.next.val == curr.val) {
+                curr.next = curr.next.next;
+			// 下一节点为null 或者 值与当前节点不同时 
+            } else {
+                curr = curr.next;
+            }
+        }
+        return head;
+    }
+}
