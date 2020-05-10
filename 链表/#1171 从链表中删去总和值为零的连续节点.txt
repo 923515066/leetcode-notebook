@@ -1,0 +1,97 @@
+给你一个链表的头节点 head，请你编写代码，反复删去链表中由 总和 值为 0 的连续节点组成的序列，直到不存在这样的序列为止。
+
+删除完毕后，请你返回最终结果链表的头节点。
+
+ 
+
+你可以返回任何满足题目要求的答案。
+
+（注意，下面示例中的所有序列，都是对 ListNode 对象序列化的表示。）
+
+示例 1：
+
+输入：head = [1,2,-3,3,1]
+输出：[3,1]
+提示：答案 [1,2,1] 也是正确的。
+示例 2：
+
+输入：head = [1,2,3,-3,4]
+输出：[1,2,4]
+示例 3：
+
+输入：head = [1,2,3,-3,-2]
+输出：[1]
+
+
+// 若存在连续节点之和为0,则必定会有两个节点前缀和相同
+// 使用hashmap覆盖保存，最后保存的节点是一段连续和为0的链表的下一个节点
+class Solution {
+    public ListNode removeZeroSumSublists(ListNode head) {
+        ListNode sentry = new ListNode(0);
+        sentry.next = head;
+
+        HashMap<Integer, ListNode> hashMap = new HashMap<>();
+        // sum为前缀val之和（不包括它自己）,若存在连续节点之和为0,则必定会有两个节点前缀和相同
+        // 使用hashmap进行覆盖保存，保留最后一个前缀和相同的节点,第二次遍历时连接保留的那个节点
+        // 最后要插入一个null引用，因为尾节点也可能在一段连续和为0的链表中
+        int sum = 0;
+        ListNode curr = head;
+        while (curr != null) {
+            hashMap.put(sum, curr);
+            sum += curr.val;
+            curr = curr.next;
+        }
+        hashMap.put(sum, curr);
+
+        ListNode pre = sentry;
+        curr = head;
+        sum = 0;
+        while (curr != null) {
+            pre.next = hashMap.get(sum);
+            if (pre.next != null) {
+                pre = pre.next;
+                curr = pre.next;
+                sum += pre.val;
+            } else {
+                break;
+            }
+        }
+        return sentry.next;
+
+    }
+}
+
+
+// 思路基本相同，但是前缀和包括当前节点
+class Solution {
+    public ListNode removeZeroSumSublists(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        Map<Integer, ListNode> map = new HashMap<>();
+
+        
+        int sum = 0;
+        // sum表示前缀和(包括当前节点，插入哨兵节点是考虑了头结点也在连续和为0的链表中的情况)
+        for (ListNode d = dummy; d != null; d = d.next) {
+            sum += d.val;
+            map.put(sum, d);
+        }
+
+        // 第二遍遍历 若当前节点处sum在下一处出现了则表明两结点之间所有节点和为0 直接删除区间所有节点
+        sum = 0;
+        // d可以认为是上一个不在连续和为0链表中的节点，第一个d自然是哨兵节点
+        ListNode d = dummy;
+        while (d != null) {
+            sum += d.val;
+            // 若无覆盖情况，则指向当前节点的next
+            // 若有，则指向覆盖节点的next
+            // (为什么可以保证覆盖节点的next不在一段新的连续和为0的链表中，因为如果是这种情况，则覆盖节点会被下一个覆盖节点覆盖)
+            d.next = map.get(sum).next;
+
+            d = d.next;
+        }
+
+        return dummy.next;
+    }
+}
