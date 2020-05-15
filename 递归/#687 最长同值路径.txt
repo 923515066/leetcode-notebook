@@ -1,0 +1,55 @@
+给定一个二叉树，找到最长的路径，这个路径中的每个节点具有相同值。 这条路径可以经过也可以不经过根节点。
+
+注意：两个节点之间的路径长度由它们之间的边数表示。
+
+示例 1:
+
+输入:
+
+              5
+             / \
+            4   5
+           / \   \
+          1   1   5
+输出:
+
+2
+示例 2:
+
+输入:
+
+              1
+             / \
+            4   5
+           / \   \
+          4   4   5
+输出:
+
+2
+注意: 给定的二叉树不超过10000个结点。 树的高度不超过1000。
+
+
+// 每个节点都要考虑作为根节点的最长同值路径，由左子树的最长垂直同值路径+右子树的最长垂直同值路径得到
+class Solution {
+    private int maxLength = 0;
+    public int longestUnivaluePath(TreeNode root) {
+        if (root == null) return 0;
+        UnivaluePathCore(root, root.val);
+        return maxLength;
+    }
+    // 递归函数 计算当前节点作为根节点的最长同值路径时
+    // 返回左右子树中的最长垂直(只能从上到下相连)同值路径+1，用于父节点计算父节点作为根节点的最长同值路径
+    public int UnivaluePathCore(TreeNode root, int value) {
+        if (root == null) return 0;
+        else if (root.val != value) {
+            UnivaluePathCore(root, root.val);
+            return 0;
+        }
+        else {
+            int left = UnivaluePathCore(root.left, value);
+            int right = UnivaluePathCore(root.right, value);
+            if (left + right > maxLength) maxLength = left + right;
+            return (left > right) ? 1 + left : 1 + right; 
+        }
+    }
+}
