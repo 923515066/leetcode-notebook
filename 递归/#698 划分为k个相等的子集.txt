@@ -1,0 +1,118 @@
+给定一个整数数组  nums 和一个正整数 k，找出是否有可能把这个数组分成 k 个非空子集，其总和都相等。
+
+示例 1：
+
+输入： nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+输出： True
+说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
+ 
+
+提示：
+
+1 <= k <= len(nums) <= 16
+0 < nums[i] < 10000
+
+
+
+//nums数组中所有值回溯遍历，直到所有值都能放进桶里
+// 效率很低
+class Solution {
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        int max = -1;
+        for (int i = 0; i <nums.length; i++) {
+            sum += nums[i];
+            if (max < nums[i]) max = nums[i];
+        }
+        int value = sum / k;
+        if (sum % k != 0 || max > value) return false;
+        Arrays.sort(nums);
+
+        int []indexArray = new int[nums.length];
+        int []array = new int[k];
+        for (int i = 0; i < indexArray.length; i++) {
+            indexArray[i] = -1;
+        }
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 0;
+        }
+        int index = indexArray.length - 1;
+        while (index >= 0 && index <indexArray.length) {
+            int slotIndex = (indexArray[index] >= 0)?indexArray[index]:0;
+            for (; slotIndex < k; slotIndex++) {
+                if (array[slotIndex] + nums[index] <= value) {
+                    array[slotIndex] += nums[index];
+                    indexArray[index] = slotIndex;
+                    break;
+                }
+            }
+            if (slotIndex >= k) {
+                indexArray[index] = -1;
+                index++;
+                if (index >= indexArray.length) {
+                    return false;
+                }
+                array[indexArray[index]] -= nums[index];
+                indexArray[index] = indexArray[index] + 1;
+            } else {
+                index--;
+            }
+        }
+        return true;
+    }
+}
+
+
+
+
+// 递归思路：每个桶填满完再填下一个桶
+// 递归函数调用：进行下一个桶填充或者当前桶下一个元素的填充
+// 递归函数参数：
+	// k:桶的编号
+	// target:桶的size
+	// curr:当前桶已填充的值
+	// size：当前递归轮次 从数组哪个index开始尝试填充
+	// used：哪些元素已经使用了
+class Solution {
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        int max = -1;
+        for (int i = 0; i <nums.length; i++) {
+            sum += nums[i];
+            if (max < nums[i]) max = nums[i];
+        }
+        int value = sum / k;
+        // 不能整除或者有值大于每个桶的size的 返回false
+        if (sum % k != 0 || max > value) return false;
+        // 排序(默认升序)后从大到小填充，尽量减少遍历次数
+        Arrays.sort(nums);
+
+        boolean []indexArray = new boolean[nums.length];
+        int []array = new int[k];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 0;
+        }
+        return core(nums, k, value, 0, nums.length - 1, indexArray);
+    }
+    // k:桶的编号
+    // target:桶的size
+    // curr:当前桶已填充的值
+    // size：当前递归轮次 从数组哪个index开始尝试填充
+    // used：哪些元素已经使用了
+    public boolean core(int []nums, int k, int target, int curr, int start, boolean used[]) {
+        // 所有桶填充完则true
+        if (k == 0) return true;
+        // 当前桶填充完填充下一个
+        if (curr == target) {
+            return core(nums, k-1, target, 0, nums.length - 1, used);
+        }
+        for (int i = start; i >= 0; i--) {
+            if (!used[i] && curr + nums[i] <= target) {
+                used[i] = true;
+                if (core(nums, k, target, curr+nums[i], start - 1, used)) return true;
+                used[i] = false;
+            }
+        }
+        return false;
+    }
+}

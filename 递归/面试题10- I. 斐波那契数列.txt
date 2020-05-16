@@ -1,0 +1,61 @@
+写一个函数，输入 n ，求斐波那契（Fibonacci）数列的第 n 项。斐波那契数列的定义如下：
+
+F(0) = 0,   F(1) = 1
+F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
+斐波那契数列由 0 和 1 开始，之后的斐波那契数就是由之前的两数相加而得出。
+
+答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
+
+ 
+
+示例 1：
+
+输入：n = 2
+输出：1
+示例 2：
+
+输入：n = 5
+输出：5
+ 
+
+提示：
+
+0 <= n <= 100
+
+
+
+// 直接递归复杂度太高，可以bottom-up 从0开始循环计算斐波那契数列
+// 如果不要求取模，不考虑数字溢出
+class Solution {
+    public int fib(int n) {
+        if (n <= 1) return n;
+        int fn_1 = 1;
+        int fn_2 = 0;
+        int fn = 0;
+        for (int i = 2; i <= n; i++) {
+            fn = fn_1 + fn_2;
+            fn_2 = fn_1;
+            fn_1 = fn;
+        }
+        return fn;
+    }
+}
+
+
+求余运算规则： 设正整数 x, y, px,y,p ，求余符号为 % ，则有 (x + y) % p = (x % p + y % p) % p
+解析： 根据以上规则，可推出 f(n) % p = [f(n-1) % p + f(n-2) % p] % p，从而可以在循环过程中每次计算 sum = (a + b) % 1000000007，此操作与最终返回前取余等价。
+class Solution {
+    public int fib(int n) {
+        if (n <= 1) return n;
+        int fn_1 = 1;
+        int fn_2 = 0;
+        int fn = 0;
+        for (int i = 2; i <= n; i++) {
+            fn = fn_1 + fn_2;
+            if (fn > 1000000007) fn = fn % 1000000007;
+            fn_2 = fn_1;
+            fn_1 = fn;
+        }
+        return fn;
+    }
+}
