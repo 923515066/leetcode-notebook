@@ -1,0 +1,68 @@
+根据一棵树的前序遍历与中序遍历构造二叉树。
+
+注意:
+你可以假设树中没有重复的元素。
+
+例如，给出
+
+前序遍历 preorder = [3,9,20,15,7]
+中序遍历 inorder = [9,3,15,20,7]
+返回如下的二叉树：
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+   
+// 整体思路就是通过两个数组判断子树的区间
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder == null || inorder == null || preorder.length == 0 || inorder.length == 0) return null;
+        return buildTreeCore(preorder, inorder, 0, preorder.length - 1, 0, preorder.length -1);
+    }
+
+    public TreeNode buildTreeCore(int[]preorder, int []inorder, int headOfpre, int tailOfpre, int headOfin, int tailOfin) {
+        // 找出当前子树的根节点在中序遍历数组中的索引位置
+        int i = headOfin;
+        for (; inorder[i] != preorder[headOfpre]; i++);
+        TreeNode root = new TreeNode(preorder[headOfpre]);
+        if (i != headOfin) {
+            root.left = buildTreeCore(preorder, inorder, headOfpre+1, headOfpre + (i - headOfin), headOfin, i-1);
+        }
+        if (i != tailOfin) {
+            root.right = buildTreeCore(preorder, inorder, headOfpre + (i - headOfin) + 1, tailOfpre,i+1, tailOfin);
+        }
+        return root;
+    }
+}
+
+// 使用hashmap替代遍历查找中序数组的root节点,提高效率
+class Solution {
+    public int []preorder;
+    public int []inorder;
+    // 前序遍历其实就是按序访问每个根节点
+    // 也就是我们每次需要按照前序遍历构造节点
+    public int preIndex = 0;
+    // 哈希存储每个值在中序遍历中的索引，避免遍历 空间换时间
+    public Map <Integer, Integer>hashmap = new HashMap<>(); 
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        this.preorder = preorder;
+        this.inorder = inorder;
+        for (int i = 0; i < inorder.length; i++) {
+            hashmap.put(inorder[i], i);
+        }
+        return buildTreeCore(0, inorder.length -1);
+    }
+
+    public TreeNode buildTreeCore(int in_left, int in_right) {
+        if (in_left > in_right) return null;
+        TreeNode root = new TreeNode(preorder[preIndex]);
+        int i = preIndex++;
+		// 注意这里不能直接传入preIndex，因为构建子树递归过程中preIndex会变化，
+        root.left = buildTreeCore(in_left, hashmap.get(preorder[i]) - 1);
+        root.right = buildTreeCore(hashmap.get(preorder[i]) + 1, in_right);
+        return root;
+    }
+}
