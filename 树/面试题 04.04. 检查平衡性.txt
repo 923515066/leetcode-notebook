@@ -1,0 +1,43 @@
+实现一个函数，检查二叉树是否平衡。在这个问题中，平衡树的定义如下：任意一个节点，其两棵子树的高度差不超过 1。
+
+
+示例 1:
+给定二叉树 [3,9,20,null,null,15,7]
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回 true 。
+示例 2:
+给定二叉树 [1,2,2,3,3,null,null,4,4]
+      1
+     / \
+    2   2
+   / \
+  3   3
+ / \
+4   4
+返回 false 。
+
+
+//递归 每个节点判断当前节点是否平衡，同时返回当前高度
+class Solution {
+    private boolean balance = true;
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) return balance;
+        isBalancedCore(root);
+        return balance;
+    }
+
+    public int isBalancedCore(TreeNode root) {
+        if (root == null) return 0;
+        int leftHeight = isBalancedCore(root.left);
+        int rightHeight = isBalancedCore(root.right);
+        // 可以在这里进行balance的判断，如果为false就不用进行后续比较了
+        if (leftHeight > rightHeight + 1 || leftHeight + 1 < rightHeight) {
+            balance = false;
+        }
+        return (leftHeight > rightHeight)?leftHeight+1:rightHeight+1;
+    }
+}
