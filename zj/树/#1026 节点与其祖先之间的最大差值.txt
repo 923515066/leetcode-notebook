@@ -1,0 +1,47 @@
+给定二叉树的根节点 root，找出存在于不同节点 A 和 B 之间的最大值 V，其中 V = |A.val - B.val|，且 A 是 B 的祖先。
+
+（如果 A 的任何子节点之一为 B，或者 A 的任何子节点是 B 的祖先，那么我们认为 A 是 B 的祖先）
+
+ 
+
+示例：
+
+
+
+输入：[8,3,10,1,6,null,14,null,null,4,7,13]
+输出：7
+解释： 
+我们有大量的节点与其祖先的差值，其中一些如下：
+|8 - 3| = 5
+|3 - 7| = 4
+|8 - 1| = 7
+|10 - 13| = 3
+在所有可能的差值中，最大值 7 由 |8 - 1| = 7 得出。
+ 
+
+提示：
+
+树中的节点数在 2 到 5000 之间。
+每个节点的值介于 0 到 100000 之间。
+
+
+
+//  题目是二叉树，不是二叉搜索树
+// 思路：类似前序遍历，同时递归函数中保存当前路径的最大值 最小值
+class Solution {
+    private int gap = 0;
+    public int maxAncestorDiff(TreeNode root) {
+        maxAncestorDiffCore(root, root.val, root.val);
+        return gap;
+    }
+
+    public void maxAncestorDiffCore(TreeNode root, int max, int min) {
+        if (root == null) return;
+        if (Math.abs(root.val-max) > gap) gap = Math.abs(root.val-max);
+        if (Math.abs(root.val-min) > gap) gap = Math.abs(root.val-min);
+        if (root.val < min) min = root.val;
+        if (root.val > max) max = root.val;
+        maxAncestorDiffCore(root.left, max, min);
+        maxAncestorDiffCore(root.right, max, min);
+    }
+}
