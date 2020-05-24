@@ -1,0 +1,96 @@
+我们从二叉树的根节点 root 开始进行深度优先搜索。
+
+在遍历中的每个节点处，我们输出 D 条短划线（其中 D 是该节点的深度），然后输出该节点的值。（如果节点的深度为 D，则其直接子节点的深度为 D + 1。根节点的深度为 0）。
+
+如果节点只有一个子节点，那么保证该子节点为左子节点。
+
+给出遍历输出 S，还原树并返回其根节点 root。
+
+ 
+
+示例 1：
+
+
+
+输入："1-2--3--4-5--6--7"
+输出：[1,2,5,3,4,6,7]
+示例 2：
+
+
+
+输入："1-2--3---4-5--6---7"
+输出：[1,2,5,3,null,6,null,4,null,7]
+示例 3：
+
+
+
+输入："1-401--349---90--88"
+输出：[1,401,null,349,88,90]
+ 
+
+提示：
+
+原始树中的节点数介于 1 和 1000 之间。
+每个节点的值介于 1 和 10 ^ 9 之间。
+
+
+
+//  递归函数构建树节点，函数中传入当前节点(若存在)的深度
+// 使用int成员变量保存当前字符串索引位置
+// 定义一个函数判断下一个构建节点的深度，如果符合，则递归函数中构建节点，修改索引位置
+// 定义一个函数获取当前节点的值(有可能是多位数),函数在确定节点存在位置的情况下调用，在函数中修改索引位置
+// 注意索引位置的更新
+class Solution {
+    // 保存字符串引用
+    private String s;
+    // 记录当前字符串的索引位置
+    private int index = 0;
+    public TreeNode recoverFromPreorder(String s) {
+        this.s = s;
+        TreeNode root = recoverFromPreorderCore(0);
+        return root;
+    }
+
+    public TreeNode recoverFromPreorderCore(int currDepth) {
+        // 遍历到字符串末尾，结束
+        if (index == s.length()) return null;
+        // 获取当前节点的深度
+        int depth = getDepth(index);
+        if (depth < currDepth) return null;
+        // 确保当前节点存在，才更改索引值
+        index += depth;
+        // 获取当前节点的值
+        int value = getValue(index);
+
+        TreeNode root = new TreeNode(value);
+        TreeNode left = recoverFromPreorderCore(currDepth+1);
+        // 如果left不存在，根据题目定义，不用遍历右子树了
+        if (left == null) return root;
+        root.left = left;
+        TreeNode right = recoverFromPreorderCore(currDepth+1);
+        root.right = right;
+        return root;
+    }
+
+    // 获取下一个构建节点的深度,传入的是上一个节点最后一位的下一位
+    public int getDepth(int index) {
+        int i = 0;
+        for (; s.charAt(index + i) == '-';i++);
+        return i;
+    }
+
+    // 获取当前节点的值，有可能是多位数，传入的是当前节点的第一位
+    // 注意在函数中需要修改索引值
+    public int getValue(int index) {
+        int sum = 0;
+        for (;index < s.length() && s.charAt(index) != '-'; index++) {
+            sum = sum * 10 + (s.charAt(index) - '0');
+        }
+        this.index = index;
+        return sum;
+    }
+}
+
+
+// 另一种递归思路：在当前节点根据字符串中节点深度确定左右子树的范围
+// 下次复习时可以尝试下
