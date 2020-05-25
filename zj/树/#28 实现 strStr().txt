@@ -1,0 +1,70 @@
+实现 strStr() 函数。
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
+
+示例 1:
+
+输入: haystack = "hello", needle = "ll"
+输出: 2
+示例 2:
+
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+说明:
+
+当 needle 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
+
+对于本题而言，当 needle 是空字符串时我们应当返回 0 。这与C语言的 strstr() 以及 Java的 indexOf() 定义相符。
+
+
+
+// KMP初阶解法，解释见收藏 编程知识->数据结构->KMP
+class Solution {
+    private int []next;
+    public int strStr(String str, String pattern) {
+        int str_i = 0;
+        int pat_j = 0;
+        int len_str = str.length();
+        int len_pat = pattern.length();
+        if (len_pat == 0 || len_str == 0) {
+            if (len_pat == 0) return 0;
+            else if (len_str == 0) return -1;
+        }
+        if (len_pat != 0 && len_str == 0) return -1;
+        getNext(pattern);
+        while (str_i < len_str && pat_j < len_pat) {
+            if (pat_j == -1 || pattern.charAt(pat_j) == str.charAt(str_i)) {
+                str_i++;
+                pat_j++;
+            } else {
+                pat_j = next[pat_j];
+            }
+        }
+        if (pat_j == pattern.length()) return (str_i - pat_j);
+        return -1;
+    }
+
+    public void getNext(String pattern) {
+        int len_pat = pattern.length();
+        next = new int[len_pat];
+        next[0] = -1;
+        // next[j+1]为 当前子字符串p[0]到p[j]的最长公共前后缀的长度 next[0] = -1 next[1] = 0
+        int k = -1;
+        int j = 0;
+        // 索引位置在j时确定的是next[j+1]
+        while (j < (len_pat - 1)) {
+            if (k == -1 || pattern.charAt(j) == pattern.charAt(k)) {
+                k++;
+                j++;
+                next[j] = k;
+            } else {
+                k = next[k];
+            }
+        }
+    }
+}
+
+
+
+// 给出KMP优化解法
+// 详见https://wiki.jikexueyuan.com/project/kmp-algorithm/define.html
