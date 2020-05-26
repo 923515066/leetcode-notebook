@@ -30,7 +30,6 @@ class Solution {
             if (len_pat == 0) return 0;
             else if (len_str == 0) return -1;
         }
-        if (len_pat != 0 && len_str == 0) return -1;
         getNext(pattern);
         while (str_i < len_str && pat_j < len_pat) {
             if (pat_j == -1 || pattern.charAt(pat_j) == str.charAt(str_i)) {

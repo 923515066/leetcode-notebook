@@ -38,7 +38,8 @@
 class Solution {
     public boolean isSubtree(TreeNode s, TreeNode t) {
         if (s == null && t != null) return false;
-        return isSametree(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+		// 把isSameTree放在最后，力扣实测执行用时快6ms？？
+        return  isSubtree(s.left, t) || isSubtree(s.right, t) || isSametree(s, t);
     }
 
     public boolean isSametree(TreeNode s, TreeNode t) {
@@ -51,4 +52,74 @@ class Solution {
     }
 }
 
-// KMP解法后续给出
+
+
+
+//  KMP解法
+class Solution {
+    private StringBuilder sb_s = new StringBuilder();
+    private StringBuilder sb_t = new StringBuilder();
+    private int []next;
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null && t != null) return false;
+        preOrder(s, sb_s);
+        preOrder(t, sb_t);
+        return kmp(sb_s.toString(), sb_t.toString());
+    }
+
+// 获取二叉树对应的先序遍历字符串(子节点为null的话插入'l'or'r'使得树形状和遍历字符串唯一对应)
+    public void preOrder(TreeNode root, StringBuilder sb) {
+        // s表示当前节点开始，不然类似[12][2]这种测试用例无法通过
+        sb.append("s" + root.val);
+        if (root.left != null) {
+            preOrder(root.left, sb);
+        } else {
+            sb.append('l');
+        }
+        if (root.right != null) {
+            preOrder(root.right, sb);
+        } else {
+            sb.append('r');
+        }
+
+    }
+    public boolean kmp(String str, String pattern) {
+        int str_i = 0;
+        int pat_j = 0;
+        int len_str = str.length();
+        int len_pat = pattern.length();
+        if (len_pat == 0 || len_str == 0) {
+            if (len_pat == 0) return true;
+            else if (len_str == 0) return false;
+        }
+        getNext(pattern);
+        while (str_i < len_str && pat_j < len_pat) {
+            if (pat_j == -1 || str.charAt(str_i) == pattern.charAt(pat_j)) {
+                str_i++;
+                pat_j++;
+            } else {
+                pat_j = next[pat_j];
+            }
+        }
+        if (pat_j == len_pat) {
+            return true;
+        }
+        return false;
+    }
+
+    public void getNext(String pattern) {
+        next = new int[pattern.length()];
+        next[0] = -1;
+        int k = -1;
+        int pat_j = 0;
+        while (pat_j < (pattern.length() - 1) ) {
+            if (k == -1 || pattern.charAt(pat_j) == pattern.charAt(k)) {
+                k++;
+                pat_j++;
+                next[pat_j] = k;
+            } else {
+                k = next[k];
+            }
+        }
+    }
+}
