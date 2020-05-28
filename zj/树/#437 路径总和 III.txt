@@ -47,3 +47,50 @@ class Solution {
         func1(root.right, sum, curr+ root.val);
     }
 }
+
+
+
+
+ // 思路：用hashmap记录当前遍历父节点的前缀和，如果当前节点的前缀和 减 sum 出现过，
+//  则说明存在至少一条路径，路径和为sum。
+
+// 注意：祖先节点中 前缀和为 “当前节点的前缀和 减 sum” 的节点 不在该路径中 比如1->1->2->3->4  10 中的第一个节点(前缀和为11-10 == 1)
+// 所以如果路径从根节点开始比如1->2->3->4  10，我们需要在遍历根节点前虚拟一个类似链表中的哨兵节点，前缀和为0
+
+// 同时，如果路径和sum为0，注意特殊情况判断
+
+// 因为路径只能是从父节点到子节点，在当前节点先序遍历完成后需要从hashmap中删除当前节点的前缀和
+class Solution {
+    private Map<Integer, Integer> hashmap = new HashMap<Integer, Integer>();
+    private int pathNum = 0;
+    public int pathSum(TreeNode root, int sum) {
+        if (root == null) return 0;
+        // 虚拟哨兵前缀
+        hashmap.put(0, 1);
+        pathSumCore(root, sum, 0);
+        return pathNum;
+    }
+
+    public void pathSumCore(TreeNode root, int sum, int curr) {
+        if (root == null) return;
+
+        if (hashmap.containsKey(curr+root.val)) {
+            hashmap.put(curr+root.val, hashmap.get(curr+root.val)+1);
+        }else {
+            hashmap.put(curr+root.val, 1);
+        }
+        if (hashmap.containsKey(curr + root.val - sum)) {
+            if (sum != 0)
+                pathNum += hashmap.get(curr + root.val - sum);
+            else
+                pathNum += (hashmap.get(curr + root.val - sum) - 1);
+        }
+        pathSumCore(root.left, sum, curr+root.val);
+        pathSumCore(root.right, sum, curr+root.val);
+        if (hashmap.get(curr+root.val) > 1) {
+            hashmap.put(curr+root.val, hashmap.get(curr+root.val)-1);
+        }else {
+            hashmap.remove(curr+root.val);
+        }
+    }
+}
