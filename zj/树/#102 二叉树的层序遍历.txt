@@ -1,0 +1,75 @@
+给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+ 
+
+示例：
+二叉树：[3,9,20,null,null,15,7],
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回其层次遍历结果：
+
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+
+
+
+
+//  naive思路：使用队列非递归遍历节点，但是还需要使用多一个队列记录节点深度
+class Solution {
+    private List<List<Integer>> treeList = new LinkedList<List<Integer>>(); 
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null) return new LinkedList<List<Integer>>();
+        List<Integer> curr = new LinkedList<Integer>();
+        List<TreeNode> nodeQueue = new LinkedList<TreeNode>();
+        List<Integer> depthQueue = new LinkedList<Integer>();
+        nodeQueue.add(root);
+        depthQueue.add(1);
+        int currDepth = 1;
+        while(!nodeQueue.isEmpty()) {
+            if (depthQueue.remove(0) != currDepth) {
+                treeList.add(curr);
+                curr = new LinkedList<Integer>();
+                currDepth++;
+            }
+            TreeNode currNode = nodeQueue.remove(0);
+            if (currNode.left != null) {
+                nodeQueue.add(currNode.left);
+                depthQueue.add(currDepth+1);
+            }
+            if (currNode.right != null) {
+                nodeQueue.add(currNode.right);
+                depthQueue.add(currDepth+1);
+            }
+            curr.add(currNode.val);
+        }
+        treeList.add(curr);
+        return treeList;
+    }
+}
+
+
+//  思路：递归先序遍历，递归函数中传入当前节点深度
+class Solution {
+    private List<List<Integer>> treeList = new ArrayList<List<Integer>>(); 
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        dfs(root, 1);
+        return treeList;
+    }
+
+    public void dfs(TreeNode root, int level) {
+        if (root == null) return;
+        if (treeList.size() < level) {
+            treeList.add(new ArrayList<>());
+        }
+        treeList.get(level - 1).add(root.val);
+        dfs(root.left, level + 1);
+        dfs(root.right, level + 1);
+    }
+}
