@@ -1,0 +1,68 @@
+给定一棵二叉树，返回所有重复的子树。对于同一类的重复子树，你只需要返回其中任意一棵的根结点即可。
+
+两棵树重复是指它们具有相同的结构以及相同的结点值。
+
+示例 1：
+
+        1
+       / \
+      2   3
+     /   / \
+    4   2   4
+       /
+      4
+下面是两个重复的子树：
+
+      2
+     /
+    4
+和
+
+    4
+因此，你需要以列表的形式返回上述重复子树的根结点。
+
+
+
+//  官方题解1 
+class Solution {
+    private Map<String, Integer> nodeMap = new HashMap<String, Integer>();
+    private List<TreeNode> ans = new LinkedList<TreeNode> (); 
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        collect(root);
+        return ans;
+    }
+
+    // 返回子树对应的字符串,叶子结点要加上##,以保证子树形状和序列值一一对应
+    public String collect(TreeNode root) {
+        if (root == null) return "#";
+        // 这里需要添加“，” 保证不会因为结点间数值的字符串形式相加重合  如 1 11 和 11 1
+        String serial = root.val + "," + collect(root.left) + "," + collect(root.right);
+        nodeMap.put(serial, nodeMap.getOrDefault(serial, 0) + 1);
+        // 这里注意判别式只能是 == 2 因为第二次重复的node不需要添加进列表
+        if (nodeMap.get(serial) == 2) ans.add(root);
+        return serial; 
+    }
+}
+
+// 官方题解2
+class Solution {
+    private int SerialToId = 1;
+    private Map<String, Integer> serialMap = new HashMap<String, Integer>();
+    private Map<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+    private List<TreeNode> ans = new LinkedList<TreeNode>();
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        collect(root);
+        return ans;
+    }
+
+    public int collect(TreeNode root) {
+        if (root == null) return 0;
+        String serial = root.val + "," + collect(root.left) + "," + collect(root.right);
+        // 用uid来代替serial唯一标识一棵树，相比于题解1大大减少了字符串拼接的长度，也减少了哈希存储的空间
+        // computeIfAbsent 若key对应的value为空，会将第二个参数的返回值存入并返回
+        int uid = serialMap.computeIfAbsent(serial, x -> SerialToId++);
+        idMap.put(uid, idMap.getOrDefault(uid, 0) + 1);
+        if (idMap.get(uid) == 2) ans.add(root);
+        return uid;
+    }
+}
