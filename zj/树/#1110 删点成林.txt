@@ -1,0 +1,59 @@
+给出二叉树的根节点 root，树上每个节点都有一个不同的值。
+
+如果节点值在 to_delete 中出现，我们就把该节点从树上删去，最后得到一个森林（一些不相交的树构成的集合）。
+
+返回森林中的每棵树。你可以按任意顺序组织答案。
+
+ 
+
+示例：
+
+
+
+输入：root = [1,2,3,4,5,6,7], to_delete = [3,5]
+输出：[[1,2,null,4],[6],[7]]
+ 
+
+提示：
+
+树中的节点数最大为 1000。
+每个节点都有一个介于 1 到 1000 之间的值，且各不相同。
+to_delete.length <= 1000
+to_delete 包含一些从 1 到 1000、各不相同的值。
+
+
+
+//  后续遍历，递归函数返回null(为删除节点)或者当前节点
+// 当前节点为删除节点则将子节点插入列表中
+class Solution {
+    private List<TreeNode> treeList= new LinkedList<TreeNode>();
+    private Set<Integer> set = new HashSet<>();
+    public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
+        if (root == null || to_delete.length == 0) {
+            treeList.add(root);
+            return treeList;
+        }
+        for (int d : to_delete) {
+            set.add(d);
+        }
+        // 添加前必须保证节点不为删除节点
+        if (!set.contains(root.val)) {
+            treeList.add(root);
+        }
+        dfs(root);
+        return treeList;
+    }
+    // 节点为删除节点则返回null
+    // 只能是后序遍历，因为如果当前节点为删除节点，在添加子节点进列表之前必须确保他们不是删除节点
+    public TreeNode dfs(TreeNode node) {
+        if (node == null) return null;
+        node.left = dfs(node.left);
+        node.right = dfs(node.right);
+        if (set.contains(node.val)) {
+            if (node.left != null) treeList.add(node.left);
+            if (node.right != null) treeList.add(node.right);
+            return null;
+        }
+        return node;
+    }
+}

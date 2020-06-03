@@ -1,0 +1,66 @@
+在一棵无限的二叉树上，每个节点都有两个子节点，树中的节点 逐行 依次按 “之” 字形进行标记。
+
+如下图所示，在奇数行（即，第一行、第三行、第五行……）中，按从左到右的顺序进行标记；
+
+而偶数行（即，第二行、第四行、第六行……）中，按从右到左的顺序进行标记。
+
+
+
+给你树上某一个节点的标号 label，请你返回从根节点到该标号为 label 节点的路径，该路径是由途经的节点标号所组成的。
+
+ 
+
+示例 1：
+
+输入：label = 14
+输出：[1,3,4,14]
+示例 2：
+
+输入：label = 26
+输出：[1,2,6,10,26]
+ 
+
+提示：
+
+1 <= label <= 10^6
+
+
+
+// 判断label的所在层数 父节点的index是(子节点index+1）/ 2;
+class Solution {
+    public List<Integer> pathInZigZagTree(int label) {
+        if (label <= 0) return new LinkedList<Integer>();
+        int level = 1;
+        int index;
+        LinkedList<Integer> list = new LinkedList<Integer>();
+        for (; label > (power(level) - 1); level++);
+        // 奇数层 从左到右，当前层最左(小)节点的label为2^(level-1)
+        if (level % 2 != 0) {
+            index = label - power(level-1) + 1;
+        } 
+		// 偶数层 从右到左，当前层最左(大)节点的label为2^(level) - 1
+		else {
+            index = power(level) - label;
+        }
+
+        while (level >= 1) {
+            if (level % 2 != 0) {
+                label = index + power(level -1 ) - 1;
+            } else {
+                label = power(level) - index;
+            }
+            list.add(0, label);
+            level--;
+            index = (index + 1)/2;
+        }
+        return list;
+    }
+
+    public int power(int n) {
+        int num = 1;
+        for (int i = 0; i < n; i++) {
+            num <<= 1;
+        }
+        return num;
+    }
+}
