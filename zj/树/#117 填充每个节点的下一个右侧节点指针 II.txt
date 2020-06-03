@@ -1,0 +1,62 @@
+给定一个二叉树
+
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+ 
+
+进阶：
+
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+ 
+
+示例：
+
+
+
+输入：root = [1,2,3,4,5,null,7]
+输出：[1,#,2,3,#,4,5,7,#]
+解释：给定二叉树如图 A 所示，你的函数应该填充它的每个 next 指针，以指向其下一个右侧节点，如图 B 所示。
+ 
+
+提示：
+
+树中的节点数小于 6000
+-100 <= node.val <= 100
+
+
+// 把二叉树的每一层看成一个链表，在遍历当前层时将下一层进行节点之间的连接
+// 一直循环，直到所有层遍历结束
+// 每一层需要一个哨兵(在上一层遍历时也就是当前层进行节点连接时构建)，用来在当前层遍历结束后跳转至下一层
+class Solution {
+    public Node connect(Node root) {
+        Node head = root;
+        // 未遍历完所有层
+        while (head != null) {
+            Node sentry = new Node();
+            Node pre = sentry;
+            // 当前层遍历未结束
+            while (head != null) {
+                if (head.left != null) {
+                    pre.next = head.left;
+                    pre = head.left;
+                }
+                if (head.right != null) {
+                    pre.next = head.right;
+                    pre = head.right;
+                }
+                head = head.next;
+            }
+            head = sentry.next;
+        }
+        return root;
+    }
+}
