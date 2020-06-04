@@ -1,0 +1,49 @@
+给出一个完全二叉树，求出该树的节点个数。
+
+说明：
+
+完全二叉树的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都达到最大值，并且最下面一层的节点都集中在该层最左边的若干位置。若最底层为第 h 层，则该层包含 1~ 2h 个节点。
+
+示例:
+
+输入: 
+    1
+   / \
+  2   3
+ / \  /
+4  5 6
+
+输出: 6
+
+
+
+
+//  直接遍历所有节点计数
+class Solution {
+    public int countNodes(TreeNode root) {
+		if (root == null) return 0;
+        return 1+countNodes(root.left) + countNodes(root.right);
+    }
+}
+
+
+//  节点计算左子树高度和右子树高度
+// 若相同，则左子树必为满二叉树，节点数为2^h - 1
+// 若不同，则右子树必为满二叉树，节点数为2^h - 1
+// (看似为o(logn)的复杂度，实测比递归遍历所有节点慢。。)
+class Solution {
+    public int countNodes(TreeNode root) {
+		if (root == null) return 0;
+        int leftDepth = getDepth(root.left);
+        int rightDepth = getDepth(root.right);
+        if (leftDepth == rightDepth) return (1 << leftDepth) + countNodes(root.right);
+        else return (1 << rightDepth) + countNodes(root.left);
+    }
+
+    public int getDepth(TreeNode root) {
+        if (root == null) return 0;
+        int leftDepth = getDepth(root.left);
+        int rightDepth = getDepth(root.right);
+        return (leftDepth > rightDepth)?1+leftDepth:1+rightDepth;
+    }
+}
