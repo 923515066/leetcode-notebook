@@ -1,0 +1,81 @@
+给定一个二叉树（具有根结点 root）， 一个目标结点 target ，和一个整数值 K 。
+
+返回到目标结点 target 距离为 K 的所有结点的值的列表。 答案可以以任何顺序返回。
+
+ 
+
+示例 1：
+
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], target = 5, K = 2
+输出：[7,4,1]
+解释：
+所求结点为与目标结点（值为 5）距离为 2 的结点，
+值分别为 7，4，以及 1
+
+
+
+注意，输入的 "root" 和 "target" 实际上是树上的结点。
+上面的输入仅仅是对这些对象进行了序列化描述。
+
+
+
+//  深度优先遍历使用hashmap记录每个节点的父节点
+// 广度优先遍历使用queue寻找距离为k的节点
+// 在queue中插入Null来区分距离不同的节点
+// hashset记录走过的节点
+class Solution {
+    private HashMap<TreeNode, TreeNode> par = new HashMap<TreeNode, TreeNode>();
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int K) {
+		if (root == null || target == null) return new ArrayList<>();
+        dfs(root, null);      
+        int dist = 0;
+        Queue<TreeNode> queue = new LinkedList<>();
+        // null表示开始遍历新的距离的节点，同时要在队列中插入新的null
+        queue.add(null);
+        queue.add(target);
+
+        HashSet<TreeNode> set = new HashSet<>();
+        set.add(target);
+        // 使得queue中的null只用于区隔不同距离的节点
+        set.add(null);  
+		
+        while(!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            // 新的距离或者dist已经为K
+            if (node == null) {
+				if (dist == K) {
+                    List<Integer> list = new ArrayList<>();
+                    for (TreeNode a : queue) {
+                        list.add(a.val);
+                    }
+                    return list;
+                }
+                queue.add(null);
+                dist++;
+            } else {
+                // 一开始已经add了Null，所以如果节点的左右子节点为null是是不会再add 进去的
+				if (!set.contains(node.left)) {
+					set.add(node.left);
+                    queue.add(node.left);
+                }
+                if (!set.contains(node.right)) {
+					set.add(node.right);
+                    queue.add(node.right);
+                }
+                TreeNode parent = par.get(node);
+                if (!set.contains(parent)) {
+                    set.add(parent);
+                    queue.add(parent);
+                }
+            }
+        }
+		return new ArrayList<>();
+    }
+
+    public void dfs(TreeNode node, TreeNode parent) {
+        if (node == null) return;
+        par.put(node, parent);
+        dfs(node.left, node);
+        dfs(node.right, node);
+    }
+}
