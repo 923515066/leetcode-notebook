@@ -63,4 +63,28 @@ class Solution {
 }
 
 
-//位操作解法未给出
+//位操作解法
+//  记录路径上结点值出现次数为奇数的节点数量  <=1则符合
+// 因为节点值范围为1-9所以使用二进制数的每一位来异或记录1-9的出现次数，奇数次该位为1 偶数次为0
+
+class Solution {
+    int ans = 0;
+    public int pseudoPalindromicPaths (TreeNode root) {
+        pseudoPalindromicPathsCore(root, 0);
+        return ans;
+    }
+
+    public void pseudoPalindromicPathsCore(TreeNode root, int temp) {
+        if (root == null) return;
+        // root的值为1则位运算异或第一位  值为9则位运算异或第9位
+        // 若出现偶数次则异或后为0 奇数次为1
+        temp ^= (1 << root.val);
+        if (root.left != null || root.right != null) {
+            pseudoPalindromicPathsCore(root.left, temp);
+            pseudoPalindromicPathsCore(root.right, temp);
+        } else {
+            // temp & (temp-1)可以消除二进制中最低位的1  如果二进制数中只有一个1(伪回文数)则结果为0
+            if (temp == 0 || (temp&(temp -1)) == 0) ans++;
+        }
+    }
+}
