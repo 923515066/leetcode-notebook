@@ -66,3 +66,22 @@ class Solution {
 
 
 // 可以尝试下官方题解的思路
+//  官方题解2
+// map记录每一层第一个见到的节点(最左节点)
+// 遍历所有计算节点与该层最左节点的宽度
+// ans记录最大宽度
+class Solution {
+    int ans = 0;
+    Map<Integer, Integer> left = new HashMap<>();
+    public int widthOfBinaryTree(TreeNode root) {
+        dfs(root, 0, 1);
+        return ans;
+    }
+    public void dfs(TreeNode root, int depth, int pos) {
+        if (root == null) return;
+        left.computeIfAbsent(depth, x-> pos);
+        ans = Math.max(ans, pos - left.get(depth) + 1);
+        dfs(root.left, depth + 1, 2 * pos);
+        dfs(root.right, depth + 1, 2 * pos + 1);
+    }
+}
