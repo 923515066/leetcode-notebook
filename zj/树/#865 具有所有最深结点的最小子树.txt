@@ -62,3 +62,46 @@ class Solution {
 
 // 官方题解2 
 // 只遍历一遍  需要定义递归函数返回的对象(包括返回节点和高度)
+// 构造返回对象，递归返回当前子树中包含所有最深节点(该子树的最深深度)的公共祖先及最深深度
+// 如果两子树都不反回Null且深度相同则返回当前节点构造的对象
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        if (root == null) return null;
+		Object1 rootNode = subtreeWithAllDeepestCore(root, 1);
+		return rootNode.node;
+    }
+
+    public Object1 subtreeWithAllDeepestCore(TreeNode root, int height) {
+		if (root == null) return null;
+        Object1 leftSon = subtreeWithAllDeepestCore(root.left, height+1);
+        Object1 rightSon = subtreeWithAllDeepestCore(root.right, height+1);
+        if (leftSon == null && rightSon == null) {
+            // 构造自己返回
+            Object1 currNode = new Object1();
+            currNode.depth = height;
+            currNode.node = root;
+            return currNode;
+        } else if (leftSon == null) {
+            return rightSon;
+        } else if (rightSon == null) {
+            return leftSon;
+        } else {
+            // 两颗子树都不为Null 比较高度是否相同
+			if (leftSon.depth == rightSon.depth) {
+                // 高度相同 构造自己返回
+                Object1 currNode = new Object1();
+            	currNode.depth = leftSon.depth;
+            	currNode.node = root;
+            	return currNode;
+            } else if (leftSon.depth > rightSon.depth){
+				return leftSon;
+            } else return rightSon;
+        }
+
+    }
+}
+
+class Object1 {
+    public int depth;
+    public TreeNode node;
+}

@@ -40,3 +40,24 @@ class Solution {
 }
 
 //可以尝试官方题解 复杂度优化版本o(n)
+// 优化为一次遍历数组构造二叉搜索树 
+ // 思路：因为是二叉搜索树  所以在递归构造每个节点时 传入节点的大小范围
+class Solution {
+    private int[] preorder;
+    private int index = 0;
+    public TreeNode bstFromPreorder(int[] preorder) {
+        this.preorder = preorder;
+        TreeNode root = bstFromPreorderCore(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        return root;
+    }
+
+    public TreeNode bstFromPreorderCore(int min, int max) {
+        if (index >= preorder.length) return null;
+        if (preorder[index] <= min || preorder[index] >= max) return null;
+        int currIndex = index++;
+        TreeNode root = new TreeNode(preorder[currIndex]);
+        root.left = bstFromPreorderCore(min, preorder[currIndex]);
+        root.right = bstFromPreorderCore(preorder[currIndex], max);
+        return root;
+    }
+}
