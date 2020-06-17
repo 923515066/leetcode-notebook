@@ -1,0 +1,47 @@
+输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+
+ 
+
+示例 1:
+
+给定二叉树 [3,9,20,null,null,15,7]
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回 true 。
+
+示例 2:
+
+给定二叉树 [1,2,2,3,3,null,null,4,4]
+
+       1
+      / \
+     2   2
+    / \
+   3   3
+  / \
+ 4   4
+返回 false 。
+
+
+
+
+
+//  递归函数返回当前数的高度，同时判断两颗子树是否平衡，使用一个成员变量保存
+class Solution {
+    private boolean balanced = true;
+    public boolean isBalanced(TreeNode root) {
+		isBalancedCore(root);
+        return balanced;
+    }
+    public int isBalancedCore(TreeNode root) {
+        if (root == null) return 0;
+        int leftHeight = isBalancedCore(root.left);
+        int rightHeight = isBalancedCore(root.right);
+        if (Math.abs(leftHeight - rightHeight) > 1) balanced = false;
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+}

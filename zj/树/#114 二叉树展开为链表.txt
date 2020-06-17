@@ -1,0 +1,55 @@
+给定一个二叉树，原地将它展开为一个单链表。
+
+ 
+
+例如，给定二叉树
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+将其展开为：
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+
+
+
+
+//  递归函数返回当前子树拉直后的最后一个节点
+// 考虑 左子树 和右子树为Null的情况
+// 注意拉直后左子树引用置Null否则报错
+class Solution {
+    public void flatten(TreeNode root) {
+        if (root == null) return;
+        flattenCore(root);
+    }
+
+    public TreeNode flattenCore(TreeNode root) {
+        if (root.left != null) {
+            TreeNode oriRight = root.right;
+            root.right = root.left;
+            TreeNode leftTail = flattenCore(root.left);
+            root.left = null;
+            if (oriRight != null) {
+                leftTail.right = oriRight;
+                return flattenCore(oriRight);
+            } else {
+				return leftTail;
+            }
+        } else {
+            if (root.right == null) return root;
+			return flattenCore(root.right);
+        }
+    }
+}
