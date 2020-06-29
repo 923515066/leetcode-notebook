@@ -1,0 +1,46 @@
+给定一棵二叉树，设计一个算法，创建含有某一深度上所有节点的链表（比如，若一棵树的深度为 D，则会创建出 D 个链表）。返回一个包含所有深度的链表的数组。
+
+ 
+
+示例：
+
+输入：[1,2,3,4,5,null,7,8]
+
+        1
+       /  \ 
+      2    3
+     / \    \ 
+    4   5    7
+   /
+  8
+
+输出：[[1],[2,3],[4,5,7],[8]]
+
+// 两个list，一个保存链表的头节点，一个保存尾节点用于插入新节点
+class Solution {
+    private List<ListNode> treeList = new ArrayList<ListNode>(); 
+    private List<ListNode> levelCurr = new ArrayList<ListNode>();
+    public ListNode[] listOfDepth(TreeNode tree) {
+		dfs(tree, 1);
+        ListNode[] arr = new ListNode[treeList.size()];
+        for(int i = 0; i < treeList.size(); i++) {
+            arr[i] = treeList.get(i);
+        }
+        return arr;
+    }
+
+    public void dfs(TreeNode root, int level) {
+        if (root == null) return;
+        if (treeList.size() < level) {
+            ListNode node = new ListNode(root.val);
+            treeList.add(node);
+            levelCurr.add(node);
+        } else {
+            ListNode node = new ListNode(root.val);
+            levelCurr.get(level-1).next = node;
+            levelCurr.set(level-1, node);
+        }
+        dfs(root.left, level + 1);
+        dfs(root.right, level + 1);
+    }
+}
