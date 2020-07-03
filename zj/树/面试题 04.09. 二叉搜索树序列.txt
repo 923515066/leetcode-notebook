@@ -1,0 +1,68 @@
+从左向右遍历一个数组，通过不断将其中的元素插入树中可以逐步地生成一棵二叉搜索树。给定一个由不同节点组成的二叉树，输出所有可能生成此树的数组。
+
+示例:
+给定如下二叉树
+
+        2
+       / \
+      1   3
+返回:
+
+[
+   [2,1,3],
+   [2,3,1]
+]
+
+
+// 思路：每颗子树的根节点必须最先出现，然后子节点的访问顺序对于这个节点来说是无所谓的
+// 递归时间太久了。。应该尝试下回溯的，但是没想出来回溯咋写。。
+// 递归思路：第一次遍历记录三个链表：每个节点的父节点索引，每个节点的值，以及这个节点是否访问过
+// 设置临时链表temp在递归中进行深度优先遍历，节点必须没有访问过且父节点已经访问过才能使用
+class Solution {
+    private List<Boolean> found = new ArrayList<>();
+    private List<Integer> parentIndex = new ArrayList<>();
+    private List<Integer> valueList = new ArrayList<>();
+    private List<List<Integer>> ans = new LinkedList<>();
+    public List<List<Integer>> BSTSequences(TreeNode root) {
+        if (root == null) {
+            LinkedList<List<Integer>> nullList = new LinkedList<>();
+            nullList.add(new LinkedList<>());
+            return nullList;
+        }
+        preOrder(root, -1);
+        ArrayList<Integer> temp = new ArrayList<>();
+        BSTSequencesCore(temp);
+        return ans;
+    }
+
+    public void BSTSequencesCore(ArrayList temp) {
+        if (temp.size() < valueList.size()) {
+            for (int i = 0; i < found.size(); i++) {
+                if (!found.get(i) && (parentIndex.get(i) == -1 || found.get(parentIndex.get(i)))) {
+                    temp.add(valueList.get(i));
+                    found.set(i, true);
+                    BSTSequencesCore(temp);
+                    temp.remove(temp.size() - 1);
+                    found.set(i,false);
+                }
+            }
+        } else {
+            ans.add(new LinkedList<>(temp));
+        }
+        
+    }
+
+    public void preOrder(TreeNode root, int parIndex) {
+        found.add(false);
+        valueList.add(root.val);
+        parentIndex.add(parIndex);
+        // 保存当前在链表中的索引位置,不能直接在递归函数中用size()获取，遍历左子树后链表改变了
+        int pI = parentIndex.size() - 1;
+        if (root.left != null) {
+            preOrder(root.left, pI);
+        }
+        if (root.right != null) {
+            preOrder(root.right, pI);
+        }
+    }
+}
