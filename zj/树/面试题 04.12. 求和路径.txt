@@ -1,0 +1,70 @@
+给定一棵二叉树，其中每个节点都含有一个整数数值(该值或正或负)。设计一个算法，打印节点数值总和等于某个给定值的所有路径的数量。注意，路径不一定非得从二叉树的根节点或叶节点开始或结束，但是其方向必须向下(只能从父节点指向子节点方向)。
+
+示例:
+给定如下二叉树，以及目标和 sum = 22，
+
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+返回:
+
+3
+解释：和为 22 的路径有：[5,4,11,2], [5,8,4,5], [4,11,7]
+提示：
+
+节点总数 <= 10000
+
+
+// 用一个hashmap记录dfs时每个节点的当前节点和  
+// 如果map中存在(当前节点和 - target)的值的话，说明存在路径节点和为target
+// 节点本身一个节点值也需要判断是否等于target
+class Solution {
+    private int sum;
+    private Map<Integer, Integer> sumMap = new HashMap<>();
+    private int ans = 0;
+    public int pathSum(TreeNode root, int sum) {
+        this.sum = sum;
+        dfs(root, 0);
+        return ans;
+    }
+
+    public void dfs(TreeNode root, int currSum) {
+        if (root == null) return;
+        if (currSum + root.val == sum) ans++;
+        ans += sumMap.getOrDefault(currSum + root.val - sum, 0);
+        sumMap.put(currSum+root.val, sumMap.getOrDefault(currSum+root.val, 0) + 1);
+        dfs(root.left, currSum+root.val);
+        dfs(root.right, currSum+root.val);
+        sumMap.put(currSum + root.val, sumMap.get(currSum+root.val) - 1);
+    }
+}
+
+
+//朴素思路，每个节点都dfs判断是否存在从这个节点开始的路径  
+class Solution {
+    private int sum;
+    private int ans = 0;
+    public int pathSum(TreeNode root, int sum) {
+        this.sum = sum;
+        pathSumCore(root);
+        return ans;
+    }
+
+    public void pathSumCore(TreeNode root) {
+        if (root == null ) return;
+        dfs(root, 0);
+        pathSumCore(root.left);
+        pathSumCore(root.right);
+    }
+
+    public void dfs(TreeNode root, int currSum) {
+        if (root == null) return;
+        if (currSum + root.val == sum) ans++;
+        dfs(root.left, currSum+root.val);
+        dfs(root.right, currSum+root.val);
+    }
+}
