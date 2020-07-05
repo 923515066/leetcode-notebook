@@ -1,0 +1,48 @@
+给定一个非空二叉树, 返回一个由每层节点平均值组成的数组。
+
+ 
+
+示例 1：
+
+输入：
+    3
+   / \
+  9  20
+    /  \
+   15   7
+输出：[3, 14.5, 11]
+解释：
+第 0 层的平均值是 3 ,  第1层是 14.5 , 第2层是 11 。因此返回 [3, 14.5, 11] 。
+ 
+
+提示：
+
+节点值的范围在32位有符号整数范围内。
+
+
+
+// 记录每一层的总和和节点数
+class Solution {
+    private List<Integer> levelNodeNum = new ArrayList<>();
+    private List<Double> levelSum = new ArrayList<>();
+    public List<Double> averageOfLevels(TreeNode root) {
+        dfs(root, 0);
+        for(int i = 0; i < levelSum.size(); i++) {
+            levelSum.set(i, levelSum.get(i)/ levelNodeNum.get(i));
+        }
+        return levelSum;
+    }
+
+    public void dfs(TreeNode root, int level) {
+        if (root == null) return;
+        if (level == levelSum.size()) {
+            levelNodeNum.add(1);
+            levelSum.add((double) root.val);
+        } else {
+            levelSum.set(level, levelSum.get(level) + root.val);
+            levelNodeNum.set(level, levelNodeNum.get(level) + 1);
+        }
+        dfs(root.left, level+1);
+        dfs(root.right, level+1);
+    }
+}
