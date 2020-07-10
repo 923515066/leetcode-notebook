@@ -1,0 +1,55 @@
+给定一个二叉搜索树和一个目标结果，如果 BST 中存在两个元素且它们的和等于给定的目标结果，则返回 true。
+
+案例 1:
+
+输入: 
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Target = 9
+
+输出: True
+ 
+
+案例 2:
+
+输入: 
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Target = 28
+
+输出: False
+
+
+
+//  方法一 使用hashset 在dfs时对每个节点判断是否存在一个值为target-root.val
+// 方法二 中序遍历，保存升序数组，然后在数组中找出两个值的和为target
+// 此为方法二实现
+class Solution {
+    private List<Integer> list = new ArrayList<>();
+    public boolean findTarget(TreeNode root, int k) {
+        inOrder(root);
+        int i = 0;
+        int j = list.size() - 1;
+        while(true) {
+            if (i >= j) return false;
+            if (list.get(i) + list.get(j) < k ) i++;
+            else if (list.get(i) + list.get(j) > k) j--;
+            else return true;
+        }
+    }
+
+    public void inOrder(TreeNode root) {
+        if (root == null) return;
+        inOrder(root.left);
+        list.add(root.val);
+        inOrder(root.right);
+    }
+}
