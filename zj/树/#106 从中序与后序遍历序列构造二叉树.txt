@@ -36,8 +36,9 @@ class Solution {
             postOrderInverseIndex--;
             return new TreeNode(inorder[inHead]);
         } else {
-            int i = inHead;
-            while(inorder[i] != postorder[postOrderInverseIndex]) i++;
+			// 从inTail开始--, 不是从inHead开始++, 不然会遍历更多次
+            int i = inTail;
+            while(inorder[i] != postorder[postOrderInverseIndex]) i--;
             postOrderInverseIndex--;
             TreeNode node = new TreeNode(inorder[i]);
             node.right = buildTreeNode(i+1, inTail);
