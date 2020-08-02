@@ -1,0 +1,54 @@
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现了三次。找出那个只出现了一次的元素。
+
+说明：
+
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+示例 1:
+
+输入: [2,2,3,2]
+输出: 3
+示例 2:
+
+输入: [0,1,0,1,0,1,99]
+输出: 99
+
+
+
+// 使用数组记录二进制每一位出现的次数，然后每位对3取模，不为0则该位在出现了一次的数字中为1
+// class Solution {
+//     public int singleNumber(int[] nums) {
+//         int []array = new int[32];
+//         for (int a : nums) {
+//             for (int i = 31; i >= 0; i--) {
+//                 array[i] += (a&1);
+//                 a >>= 1;
+//             }
+//         }
+//         int sum = 0;
+//         for (int i = 0; i < 32; i++) {
+//             sum <<= 1;
+//             sum += (array[i]%3);
+//         }
+//         return sum;
+//     }
+// }
+
+
+// 尝试使用掩码的方法,详见题解第四种方法
+// https://leetcode-cn.com/problems/single-number-ii/solution/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--31/
+class Solution {
+    public int singleNumber(int[] nums) {
+        // 这里x1为低位，x2为高位，当x2x1的每个比特 == 3 时，通过掩码重新置零
+        int x1 = 0, x2 = 0, mask = 0;
+        for (int i : nums) {
+            // 这里x2依赖于x1之前的状态，所以先执行
+            x2 ^= x1 & i;
+            x1 ^= i;
+            mask = ~(x1 & x2);
+            x2 &= mask;
+            x1 &= mask;
+        }
+        return x1; 
+    }
+}

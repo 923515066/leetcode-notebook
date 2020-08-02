@@ -1,0 +1,88 @@
+所有 DNA 都由一系列缩写为 A，C，G 和 T 的核苷酸组成，例如：“ACGAATTCCG”。在研究 DNA 时，识别 DNA 中的重复序列有时会对研究非常有帮助。
+
+编写一个函数来查找目标子串，目标子串的长度为 10，且在 DNA 字符串 s 中出现次数超过一次。
+
+ 
+
+示例：
+
+输入：s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+输出：["AAAAACCCCC", "CCCCCAAAAA"]
+
+
+
+// 思路：官方题解方法2，核心算法是Rabin-Karp算法，Rabin-Karp详细解释见
+// https://leetcode-cn.com/problems/longest-duplicate-substring/solution/zui-chang-zhong-fu-zi-chuan-by-leetcode/
+// class Solution {
+//     public List<String> findRepeatedDnaSequences(String s) {
+//         int L = 10, n = s.length();
+//         if (n <= L) return new ArrayList<>();
+
+//         // 字符串中只有四个编码，可视为4进制
+//         int a = 4, aL = (int) Math.pow(a, L);
+
+//         // 将字符映射为数字
+//          Map<Character, Integer> toInt = new
+//             HashMap() {{put('A', 0); put('C', 1); put('G', 2); put('T', 3); }};
+//         int []nums = new int[s.length()];
+//         for (int i = 0; i < s.length(); i++) nums[i] = toInt.get(s.charAt(i));
+
+//         // h为每个字符子串的哈希值
+//         int h = 0;
+//         HashSet<Integer> seen = new HashSet<>();
+//         HashSet<String> ans = new HashSet<>();
+//         for(int start = 0; start < n - L + 1; start++) {
+//             if (start == 0) {
+//                 for (int i = 0; i < L; i++) {
+//                     h = h * a + nums[i];
+//                 }
+//             } else {
+//                 // 计算旋转哈希
+//                 h = h * a - nums[start - 1] * aL + nums[start + L - 1];
+//             }
+//             if  (seen.contains(h)) ans.add(s.substring(start, start+L));
+//             else seen.add(h);
+//         }
+//         return new ArrayList<String>(ans);
+
+//     }
+// }
+
+// 思路：官方题解方法3，核心算法也是Rabin-Karp算法，但是计算哈希值时使用位运算替代了多项式
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        int L = 10, n = s.length();
+        if (n <= L) return new ArrayList<>();
+
+        // 字符串中只有四个编码，可视为4进制
+        int a = 4, aL = (int) Math.pow(a, L);
+
+        // 将字符映射为数字
+         Map<Character, Integer> toInt = new
+            HashMap() {{put('A', 0); put('C', 1); put('G', 2); put('T', 3); }};
+        int []nums = new int[s.length()];
+        for (int i = 0; i < s.length(); i++) nums[i] = toInt.get(s.charAt(i));
+
+        // h为每个字符子串的哈希值
+        int h = 0;
+        HashSet<Integer> seen = new HashSet<>();
+        HashSet<String> ans = new HashSet<>();
+        for(int start = 0; start < n - L + 1; start++) {
+            if (start == 0) {
+                for (int i = 0; i < L; i++) {
+                    h <<= 2;
+                    h = h | nums[i];   
+                }
+            } else {
+                h <<= 2;
+                // 将左移的两位置零，因为假设字符串长度为10，每个字符使用两位表示，则int中只有20个bit是有效的
+                h = h & ~(3 << (2 * L));
+                h = h | nums[start + L - 1];
+            }
+            if  (seen.contains(h)) ans.add(s.substring(start, start+L));
+            else seen.add(h);
+        }
+        return new ArrayList<String>(ans);
+
+    }
+}
