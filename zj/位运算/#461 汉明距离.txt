@@ -31,3 +31,18 @@ class Solution {
         return ans;
     }
 }
+
+
+// a & (a-1) 这个操作能够把最低位的1置零
+// 所以我们先异或，然后计算异或值中1的位数
+class Solution {
+    public int hammingDistance(int x, int y) {
+        int dis = 0;
+        int xor = x ^ y;
+        while(xor != 0) {
+            dis++;
+            xor = xor & (xor-1);
+        }
+        return dis;
+    }
+}

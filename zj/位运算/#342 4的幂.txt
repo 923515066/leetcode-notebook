@@ -1,0 +1,32 @@
+给定一个整数 (32 位有符号整数)，请编写一个函数来判断它是否是 4 的幂次方。
+
+示例 1:
+
+输入: 16
+输出: true
+示例 2:
+
+输入: 5
+输出: false
+进阶：
+你能不使用循环或者递归来完成本题吗？
+
+
+
+// 4的幂在二进制上只有一个1而且在奇数位上
+class Solution {
+    public boolean isPowerOfFour(int num) {
+        while(num != 0) {
+            // 4的倍数
+            if ((num & 3) == 0) {
+                num >>= 2;
+            } else {
+                if (num == 1) return true;
+                return false;
+            }
+        }
+        return false;
+
+    }
+}
+// 更骚操作 不用循环判断 见官方题解
