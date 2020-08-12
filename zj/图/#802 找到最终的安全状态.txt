@@ -1,0 +1,106 @@
+在有向图中, 我们从某个节点和每个转向处开始, 沿着图的有向边走。 如果我们到达的节点是终点 (即它没有连出的有向边), 我们停止。
+
+现在, 如果我们最后能走到终点，那么我们的起始节点是最终安全的。 更具体地说, 存在一个自然数 K,  无论选择从哪里开始行走, 我们走了不到 K 步后必能停止在一个终点。
+
+哪些节点最终是安全的？ 结果返回一个有序的数组。
+
+该有向图有 N 个节点，标签为 0, 1, ..., N-1, 其中 N 是 graph 的节点数.  图以以下的形式给出: graph[i] 是节点 j 的一个列表，满足 (i, j) 是图的一条有向边。
+
+示例：
+输入：graph = [[1,2],[2,3],[5],[0],[5],[],[]]
+输出：[2,4,5,6]
+这里是上图的示意图。
+
+
+
+提示：
+
+graph 节点数不超过 10000.
+图的边数不会超过 32000.
+每个 graph[i] 被排序为不同的整数列表， 在区间 [0, graph.length - 1] 中选取。
+
+
+
+// 深度优先遍历，节点状态 0：没访问过 1：处于当前遍历栈中或者能够进入一个环 2：安全
+// 如果一个节点的邻接点状态为1，如果是邻接点处于当前遍历栈中则构成新的环，否则当前节点能够访问邻接点能访问到的环
+class Solution {
+    public List<Integer> eventualSafeNodes(int[][] G) {
+        int N = G.length;
+        int []status = new int[N];
+        List<Integer> ans = new LinkedList<>();
+        for(int i = 0; i < N; i++) {
+            if (dfs(i, status, G)) ans.add(i);
+        }
+        return ans;
+    }
+
+    // dfs返回为true表示为安全节点，否则为状态1
+    public boolean dfs(int node, int []status, int[][]G) {
+        // 节点已经访问过了
+        if (status[node] != 0) return status[node] == 2;
+
+        status[node] = 1;
+        for(int val :G[node]) {
+            if (status[val] == 2) continue;
+            else {
+                // 状态为1或者为0没访问过
+                if (status[val] == 1 || !dfs(val, status, G)) return false;
+            }
+        }
+        status[node] = 2;
+        return true;
+    }
+}
+
+
+// 广度优先搜索，运行效果被dfs吊打。。
+// 从没有出边的节点开始，找到所有安全节点加入集合
+class Solution {
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        ArrayList<Integer> []inVList = new ArrayList[graph.length];
+        // for(int i = 0; i < graph.length; i++) inVList.add(new ArrayList<>());
+        // 新增加的安全节点
+        Queue <Integer> updateNode = new LinkedList<>();
+        // 记录所有的安全节点
+        boolean []isSafe = new boolean[graph.length];
+        // 从出边数组找出每个节点入边
+        for(int i = 0; i < graph.length; i++) {
+            // 节点没有出边
+            if (graph[i].length == 0) {
+                isSafe[i] = true;
+                updateNode.add(i);
+            }
+            for(int j = 0; j < graph[i].length; j++) {
+                // if (inVList.get(graph[i][j]) == null) {
+                //     inVList.set(graph[i][j], new ArrayList<Integer>());
+                // }
+                if (inVList[graph[i][j]] == null) inVList[graph[i][j]] = new ArrayList<Integer>();
+                inVList[graph[i][j]].add(i);
+            }
+        }
+        while(!updateNode.isEmpty()) {
+            int temp = updateNode.poll();
+            ArrayList<Integer> list = inVList[temp];
+            if (list == null) continue;
+            // 节点temp更新为安全节点了，检查所有指向temp的节点是否也能更新为安全节点
+            for (int outV : list) {
+                boolean safe = true;
+                for(int i = 0; i < graph[outV].length; i++) {
+                    if (!isSafe[graph[outV][i]]) {
+                        safe = false;
+                        break;
+                    }
+                }
+                if (safe) {
+                    isSafe[outV] = true;
+                    updateNode.add(outV);
+                }
+            }
+        }
+        ArrayList<Integer> ans = new ArrayList<>();
+        for(int i = 0; i < isSafe.length; i++) {
+            if (isSafe[i]) ans.add(i);
+        }
+        return ans;
+    }
+}
