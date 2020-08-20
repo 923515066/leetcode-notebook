@@ -66,3 +66,29 @@ class Solution {
         return head;
     }
 }
+
+
+// 8/14 review 看不太懂第一遍的代码了。。
+class Solution {
+    public ListNode insertionSortList(ListNode head) {
+        ListNode sensor = new ListNode();
+        sensor.next = head;
+        ListNode curr = head;
+		// changeNode表示需要往前插入的节点
+        ListNode changeNode;
+        while(curr != null) {
+			// curr表示当前最后一个排序完成的节点
+            if (curr.next == null || curr.next.val >= curr.val) {
+                curr = curr.next;
+            } else {
+                changeNode = curr.next;
+                curr.next = changeNode.next;
+                ListNode temp = sensor;
+                while(temp.next.val <= changeNode.val) temp = temp.next;
+                changeNode.next = temp.next;
+                temp.next = changeNode;
+            }
+        }
+        return sensor.next;
+    }
+}

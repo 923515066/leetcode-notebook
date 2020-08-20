@@ -99,9 +99,13 @@ class Solution {
             while (curr != null) {
                 ListNode left = curr;
                 ListNode right = split(left, i);
+				// 断开链表的下一个节点
                 curr = split(right, i);
                 pre.next = mergeTwoLists(left, right);
 
+				// 遍历找到合并后两部分链表的末端，增加了时间消耗
+				// 理论上可以让mergeTwoLists返回排序后的头结点和尾结点
+				// 但是实测更差。。
                 while (pre.next != null) {
                     pre = pre.next;
                 }
@@ -152,6 +156,50 @@ class Solution {
             } else {
                 curr.next = l2;
                 l2 =l2.next;
+            }
+            curr = curr.next;
+        }
+        curr.next = (l1 == null)?l2:l1;
+        return preHead.next;
+    }
+}
+
+
+// 迭代方法2 可以考虑使用队列，将合并好的部分插入队列，但是空间复杂度不符合常数级要求
+// 实测效果更差。。
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode sentry = new ListNode(-1);
+        Queue<ListNode> queue = new LinkedList<>();
+        ListNode curr = head;
+        ListNode next;
+        while(curr != null) {
+            next = curr.next;
+            curr.next = null;
+            queue.offer(curr);
+            curr = next;
+        } 
+        ListNode list1, list2;
+        while(queue.size() > 1) {
+            list1 = queue.poll();
+            list2 = queue.poll();
+            queue.offer(mergeTwoLists(list1, list2)); 
+        }
+        return queue.poll();
+    }
+
+    // 21 合并链表
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode preHead = new ListNode();
+        ListNode curr = preHead;
+        while(l1 != null && l2 != null) {
+            if (l1.val < l2.val) {
+                curr.next = l1;
+                l1 = l1.next;
+            } else {
+                curr.next = l2;
+                l2 = l2.next;
             }
             curr = curr.next;
         }

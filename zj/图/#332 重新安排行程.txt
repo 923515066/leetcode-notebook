@@ -1,0 +1,47 @@
+给定一个机票的字符串二维数组 [from, to]，子数组中的两个成员分别表示飞机出发和降落的机场地点，对该行程进行重新规划排序。所有这些机票都属于一个从 JFK（肯尼迪国际机场）出发的先生，所以该行程必须从 JFK 开始。
+
+说明:
+
+如果存在多种有效的行程，你可以按字符自然排序返回最小的行程组合。例如，行程 ["JFK", "LGA"] 与 ["JFK", "LGB"] 相比就更小，排序更靠前
+所有的机场都用三个大写字母表示（机场代码）。
+假定所有机票至少存在一种合理的行程。
+示例 1:
+
+输入: [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]
+输出: ["JFK", "MUC", "LHR", "SFO", "SJC"]
+示例 2:
+
+输入: [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+输出: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+解释: 另一种有效的行程是 ["JFK","SFO","ATL","JFK","ATL","SFO"]。但是它自然排序更大更靠后。
+
+
+
+// 题目应该是隐含了所有航班都必须且只能乘坐一次的条件，也就是欧拉路径
+// DFS时每遍历一条线路就删除，当访问到一个节点没有线路时就将节点插入结果集头部
+// 所以节点是在DFS中退栈时逆序插入的，而且这样能够使得无论什么时候访问到孤立节点，最后都出现在结果集的末尾
+// 而孤立节点的上一个节点在孤立节点退栈后又能继续访问其它邻接点且插入在结果集的前面
+class Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        LinkedList<String> ans = new LinkedList<>();
+        if (tickets == null || tickets.size() == 0)
+            return (List)ans;
+        // 题目要求字典序排列，这里使用优先级队列，根据String 实现的comparable接口进行排序即可
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+        for(List<String> ticket : tickets) {
+            PriorityQueue<String> queue =  graph.computeIfAbsent(ticket.get(0), k -> new PriorityQueue<>());
+            queue.add(ticket.get(1));
+        }
+        dfs(graph, ans,"JFK");
+        return (List)ans;
+
+    }
+
+    public void dfs(Map<String, PriorityQueue<String>> graph, LinkedList<String> ans, String curr) {
+        PriorityQueue<String> queue = graph.get(curr);
+        while(queue != null && !queue.isEmpty()) {
+            dfs(graph, ans, queue.poll());
+        }
+        ans.addFirst(curr);
+    }
+}
