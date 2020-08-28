@@ -98,3 +98,72 @@ class Solution {
         }
     }
 }
+
+
+// bfs  
+// 第一次遍历到该节点时肯定是最短路径(需要区分红蓝边)，因为是以0为圆心向外传播的，
+// 队列中节点到0的距离是非递减的，如果第二条路径更短的话，应该更早遍历到
+// dfs
+class Solution {
+    // 每个节点的红出边/蓝出边邻接表
+    List<List<Integer>> redGraph;
+    List<List<Integer>> blueGraph;
+
+    // 从0到每个节点且最后一条边为红边/蓝边的最短距离
+    int []red;
+    int []blue;
+
+    public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
+        redGraph= new ArrayList<>(n);
+        blueGraph = new ArrayList<>(n);
+        for(int i = 0; i < n; i++) {
+            redGraph.add(new ArrayList<>());
+            blueGraph.add(new ArrayList<>());
+        }
+        for(int []a :red_edges) {
+            redGraph.get(a[0]).add(a[1]);
+        }
+        for(int []a : blue_edges) {
+            blueGraph.get(a[0]).add(a[1]);
+        }
+        red = new int[n];
+        blue = new int[n];
+        for (int i = 1; i < n; i++) {red[i] = blue[i] = -1;}
+
+        Queue<Integer> blueQueue = new LinkedList<>();
+        Queue<Integer> redQueue = new LinkedList<>();
+
+        blueQueue.offer(0);
+        redQueue.offer(0);
+        while(!blueQueue.isEmpty() || !redQueue.isEmpty()) {
+            while (!blueQueue.isEmpty()) {
+                int lastNode = blueQueue.poll();
+                for (int node : redGraph.get(lastNode)) {
+                    if (red[node] == -1) {
+                        red[node] = blue[lastNode] + 1;
+                        redQueue.offer(node);
+                    }
+                }
+            }
+            while (!redQueue.isEmpty()) {
+                int lastNode = redQueue.poll();
+                for (int node : blueGraph.get(lastNode)) {
+                    if (blue[node] == -1) {
+                        blue[node] = red[lastNode] + 1;
+                        blueQueue.offer(node);
+                    }
+                }
+            }
+        }
+
+        int []ans = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (red[i] != -1 && blue[i] != -1) ans[i] = Math.min(red[i], blue[i]);
+            else ans[i] = Math.max(red[i], blue[i]);
+        }
+        return ans;
+    }
+}
+
+
+// 可以考虑构建类将队列减少为1个
