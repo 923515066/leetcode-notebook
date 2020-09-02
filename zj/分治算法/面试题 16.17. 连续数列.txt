@@ -1,0 +1,27 @@
+给定一个整数数组，找出总和最大的连续数列，并返回总和。
+
+示例：
+
+输入： [-2,1,-3,4,-1,2,1,-5,4]
+输出： 6
+解释： 连续子数组 [4,-1,2,1] 的和最大，为 6。
+进阶：
+
+如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的分治法求解。
+
+
+
+// 使用curr计算累计和，累积和为负数时重置清零
+// currMax记录当前连续和的最大值(如果当前所有值为负数，则currMax为负数中的单个最大值)
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int currMax = Integer.MIN_VALUE;
+        int curr = 0;
+        for (int i = 0; i < nums.length; i++) {
+            curr += nums[i];
+            currMax = Math.max(currMax, curr);
+            curr = Math.max(0, curr);
+        }
+        return currMax;
+    }
+}
