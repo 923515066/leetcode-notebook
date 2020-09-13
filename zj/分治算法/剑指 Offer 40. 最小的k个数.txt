@@ -1,0 +1,71 @@
+输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
+
+ 
+
+示例 1：
+
+输入：arr = [3,2,1], k = 2
+输出：[1,2] 或者 [2,1]
+示例 2：
+
+输入：arr = [0,1,2,1], k = 1
+输出：[0]
+ 
+
+限制：
+
+0 <= k <= arr.length <= 10000
+0 <= arr[i] <= 10000
+
+
+
+class Solution {
+    private int[] a;
+    Random random = new Random();
+    public int[] getLeastNumbers(int[] nums, int k) {
+        if (k == 0) return new int[0];
+        this.a = nums;
+		quickSelect(0, nums.length - 1, k-1);
+        int []ans = new int[k];
+        for(int i = 0; i<k;i++) {
+            ans[i] = nums[i];
+        }
+        return ans;
+    }
+
+    public int quickSelect(int l, int r, int index) {
+        int q = randomPartition(l, r);
+        // 不需要考虑数组是否排序完成，只要第k个位置确定了就完成了
+        if (q == index) {
+            return a[q];
+        } else {
+            return q < index ? quickSelect(q + 1, r, index) : quickSelect(l, q - 1, index);
+        }
+    }
+
+    public int randomPartition(int l, int r) {
+        // 引入随机值避免极限测试用例
+        // 随机范围l 到 r
+        int i = random.nextInt(r - l + 1) + l;
+        swap(i, r);
+        return partition(l, r);
+    }
+	// 返回值表示数组中该位置的数值确定
+    public int partition(int l, int r) {
+        // i 表示从左边到i 包括i本身的值都小于a[r]
+        int x = a[r], i = l - 1;
+        for (int j = l; j < r; ++j) {
+            if (a[j] <= x) {
+                swap(++i, j);
+            }
+        }
+        swap(i + 1, r);
+        return i + 1;
+    }
+
+    public void swap(int i, int j) {
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+}

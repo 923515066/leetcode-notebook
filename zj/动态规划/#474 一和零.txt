@@ -1,0 +1,94 @@
+在计算机界中，我们总是追求用有限的资源获取最大的收益。
+
+现在，假设你分别支配着 m 个 0 和 n 个 1。另外，还有一个仅包含 0 和 1 字符串的数组。
+
+你的任务是使用给定的 m 个 0 和 n 个 1 ，找到能拼出存在于数组中的字符串的最大数量。每个 0 和 1 至多被使用一次。
+
+注意:
+
+给定 0 和 1 的数量都不会超过 100。
+给定字符串数组的长度不会超过 600。
+示例 1:
+
+输入: Array = {"10", "0001", "111001", "1", "0"}, m = 5, n = 3
+输出: 4
+
+解释: 总共 4 个字符串可以通过 5 个 0 和 3 个 1 拼出，即 "10","0001","1","0" 。
+示例 2:
+
+输入: Array = {"10", "0", "1"}, m = 1, n = 1
+输出: 2
+
+解释: 你可以拼出 "10"，但之后就没有剩余数字了。更好的选择是拼出 "0" 和 "1" 。
+
+
+
+// dp[i][j][k] = max(dp[i-1][j][k], 1 + dp[i-1][j-当前字符串需要的1][k-当前字符串需要的0])
+// 也就是考虑0-i个字符串 分别考虑第i个不选或者第i个选的情况
+// 每个i考虑是否加入的情况下遍历所有j k 的结果
+class Solution {
+    public int findMaxForm(String[] strs, int m, int n) {
+		int length = strs.length;
+        int [][][]dp = new int[length+1][m+1][n+1];
+
+        for(int i = 1; i <= length; i++) {
+			int []a = countZeroAndOne(strs[i-1]);
+            for(int j = 0; j <= m; j++) {
+                for(int k = 0; k <= n; k++) {
+					if (j >= a[0] && k >= a[1]) {
+						dp[i][j][k] = Math.max(dp[i-1][j][k], 1+dp[i-1][j-a[0]][k-a[1]]);
+                    } else {
+                    	dp[i][j][k] = dp[i-1][j][k];
+                    }
+
+                }
+            }
+        }
+        return dp[length][m][n];
+    }
+
+    private int[] countZeroAndOne(String str) {
+        int[] cnt = new int[2];
+        for (char c : str.toCharArray()) {
+            cnt[c - '0']++;
+        }
+        return cnt;
+    }
+}
+
+
+// 空间优化版本
+class Solution {
+
+    private int[] calcZeroAndOne(String str) {
+        int[] res = new int[2];
+        for (char c : str.toCharArray()) {
+            res[c - '0']++;
+        }
+        return res;
+    }
+    // 空间优化，将数组从三维降低到二维
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[][] dp = new int[m + 1][n + 1];
+        dp[0][0] = 0;
+        for (String s : strs) {
+            int[] zeroAndOne = calcZeroAndOne(s);
+            int zeros = zeroAndOne[0];
+            int ones = zeroAndOne[1];
+            // 这里遍历只能从小到大，否则前面更新的结果会影响后面的
+            // 假设dp[1][1] = 1, dp[2][2] = 1, 当前str="01"
+            // dp[2][2] =  Math.max(dp[i][j], dp[i - 1][j - 1] + 1) 等于2
+            // 经过迭代 此时i = 3 ,j = 3 dp[3][3] =  Math.max(dp[i][j], dp[i - 1][j - 1] + 1) 等于3
+            // 但是dp[2][2]已经考虑了加入str="01"的情况了  如果从大到小遍历则不会
+            for (int i = m; i >= zeros; i--) {
+                for (int j = n; j >= ones; j--) {
+					// 这里的“dp[i - zeros][j - ones] + 1”其实就是无空间优化版本中的“1+dp[i-1][j-a[0]][k-a[1]]”
+					// 因为i j从大到小遍历，此时“dp[i - zeros][j - ones]”还保存着不考虑当前字符串时的结果
+					// max函数中的“dp[i][j]”同理
+                    dp[i][j] = Math.max(dp[i][j], dp[i - zeros][j - ones] + 1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}

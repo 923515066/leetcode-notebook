@@ -1,0 +1,75 @@
+给定一个无序的整数数组，找到其中最长上升子序列的长度。
+
+示例:
+
+输入: [10,9,2,5,3,7,101,18]
+输出: 4 
+解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。
+说明:
+
+可能会有多种最长上升子序列的组合，你只需要输出对应的长度即可。
+你算法的时间复杂度应该为 O(n2) 。
+进阶: 你能将算法的时间复杂度降低到 O(n log n) 吗?
+
+
+
+//  动态规划  考虑前面所有比当前值小的元素，ans[i] = max(ans[i], ans[j]+1)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        if (nums.length <= 1) return nums.length;
+        int length = nums.length;
+        int []ans = new int[length];
+        int max = 0;
+        for(int i = 0; i < length; i++) {
+            for(int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    ans[i] = Math.max(ans[i], ans[j]+1);
+                }
+
+            }
+        }
+        for(int i = 0; i < length; i++) {
+            max = Math.max(max, ans[i]);
+        }
+        return max+1;
+    }
+}
+
+
+// 贪心法+二分法
+// tail数组中tail[i]表示有i+1长度的上升子序列最后一个值最小的情况
+// tail数组是递增的
+// 贪心策略：我们使得每个长度的上升子序列的最后一个值都尽可能小 这样就能获得更长的上升子序列
+// 每个nums[i]使用二分法更新tail数组，将数组中比它大的最小的值替换，使得对应长度的上升子序列的末尾值更小
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+		int length = nums.length;
+        if (length <= 1) return length;
+        // tail[i]表示所有i+1长度的上升子序列最后一个值最小的情况
+        int []tail = new int[length];
+
+        tail[0]=nums[0];
+        int end = 0;// 表示当前最长上升子序列的长度-1(便于数组索引)
+
+        for(int i = 1; i < length; i++) {
+            if (nums[i] > tail[end]) {
+                end++;
+                tail[end] = nums[i];
+            } else {
+                int left = 0, right = end;
+                // 二分法选取比nums[i]大的最小的数
+                while(left <right) {
+                    int mid = left + ((right - left) >>> 1);
+					if (tail[mid] < nums[i]) {
+                        left = mid+1;
+                    } else {
+                        right = mid;
+                    }
+                }
+                tail[left] = nums[i];
+            }
+        }
+
+        return end+1;
+    }
+}
