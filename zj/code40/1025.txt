@@ -1,0 +1,101 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int lengthOfLIS(vector<int> arr) {
+    int size = arr.size();
+    if (size <= 1) return size;
+    vector<int> ans(size);
+    int maxAns = 0;
+    for(int i = 0; i < size; i++) {
+        for(int j = 0; j < i; j++) {
+            if (arr[i] >= arr[j]) {
+                ans[i] = max(ans[i], ans[j] + 1);
+            }
+        }
+        maxAns = max(maxAns, ans[i]);
+    }
+    return maxAns+1;
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum, temp;
+	vector<int> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> nodeNum;
+	    getchar();
+	    for(int j = 0; j <nodeNum; j++) {
+	        cin >> temp;
+	        arr.push_back(temp);
+	    }
+	    cout<<lengthOfLIS(arr)<<endl;
+	    arr.clear();
+	    getchar();
+	}
+}
+
+
+// 贪心＋二分法
+//注意上升子序列和非下降子序列有区别
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+int lengthOfLIS(vector<int> arr) {
+    int size = arr.size();
+    if (size <= 1) return size;
+    vector<int> ans(size);
+    int end = 0;
+    ans[0] = arr[0];
+    
+    for(int i = 1; i < size; i++) {
+		//上升子序列这里是>
+        if (arr[i] >= ans[end]) {
+            ans[++end] = arr[i];
+        } else {
+            int left = 0, right = end;
+            while(left < right) {
+                int mid = left + ((right - left) >>1);
+				// 上升子序列这里是<
+                if (ans[mid] <= arr[i]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            ans[left] = arr[i];
+        }
+    }
+    
+    return end+1;
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum, temp;
+	vector<int> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> nodeNum;
+	    getchar();
+	    for(int j = 0; j <nodeNum; j++) {
+	        cin >> temp;
+	        arr.push_back(temp);
+	    }
+	    cout<<lengthOfLIS(arr)<<endl;
+	    arr.clear();
+	    getchar();
+	}
+}

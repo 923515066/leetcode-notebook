@@ -1,0 +1,58 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+// 本质就是求逆序对数量
+void getInversePair(vector<int> &arr, int head, int tail, vector<int> &tempArr, int &pairNum) {
+    if (head >= tail) return;
+    int mid = ((head + tail) >> 1);
+    getInversePair(arr, head, mid, tempArr, pairNum);
+    getInversePair(arr, mid+1, tail, tempArr, pairNum);
+    
+    int index1 = head, index2 = mid+1;
+    int tempIndex = head;
+    while(index1 <= mid && index2 <= tail) {
+        if (arr[index1] < arr[index2]) {
+            tempArr[tempIndex++] = arr[index1++];
+        } else {
+            tempArr[tempIndex++] = arr[index2++];
+            pairNum += (mid - index1 + 1);
+        }
+    }
+    while(index1 <= mid) {
+        tempArr[tempIndex++] = arr[index1++];
+    }
+    while(index2 <= tail) {
+        tempArr[tempIndex++] = arr[index2++];
+    }
+    for(int i = head; i <= tail; i++) {
+        arr[i] = tempArr[i];
+    }
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum;
+	vector<int> arr;
+	int temp, pairNum;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    getchar();
+	    pairNum = 0;
+	    vector<int> tempArr(nodeNum);
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>temp;
+	        arr.push_back(temp);
+	    }
+	    getInversePair(arr, 0, nodeNum-1, tempArr, pairNum);
+	    cout<<pairNum<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

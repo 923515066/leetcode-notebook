@@ -1,0 +1,54 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+void binarySearch(vector<int> &arr, int findNum) {
+    int size = arr.size();
+    int left = 0, right = size-1;
+    int father = 0;
+    int mid;
+    while(left <=right) {
+        mid = (left + right) >>1;
+        if (arr[mid] == findNum) {
+            cout<<"success, father is "<<father<<endl;
+            return;
+        }
+        else if (arr[mid] < findNum) {
+            left = mid+1;
+            father = arr[mid];
+        } else {
+            right = mid-1;
+            father = arr[mid];
+        }
+    }
+    cout<<"not found, father is "<<father<<endl;
+    
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int Num;
+	int findNum;
+	int temp;
+	vector<int> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> Num;
+	    cin>>findNum;
+	    for(int j = 0; j <Num; j++) {
+	        cin >>temp;
+	        arr.push_back(temp);
+	    }
+	    binarySearch(arr, findNum);
+	    getchar();
+	    arr.clear();
+	}
+}

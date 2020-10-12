@@ -1,0 +1,619 @@
+//初始化二维vector
+vector<vector<int>> ans(nodeNum+1, vector<int>(account+1, -1));
+// struct使用 以及优先级队列使用见#1028
+
+// 1000
+#include <iostream>
+using namespace std;
+int main() {
+    int n, a, b;
+    cin >> n;
+    for(int i=0; i<n; i++) {
+        cin >> a >> b;
+        cout << a + b << endl;
+    }
+    return 0;
+}
+
+// 1001
+pass
+
+//1002
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    string input;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        getline(cin, input);
+        stringstream stringin(input);
+        stringin >> temp;
+        int min_1 = 1001;
+        int min_2 = 1000;
+        while(stringin >> temp) {
+            if (temp <min_1) {
+                min_2 = min_1;
+                min_1 = temp;
+            } else if (temp < min_2) {
+                min_2 = temp;
+            }
+        }
+        cout<< min_2<<endl;
+    }
+}
+
+// 1003
+
+// bubbleSort
+vector<int> bubbleSort(vector<int> arr) {
+    int sortedIndex = 0;
+    for(int i = 0; i < arr.size(); i++) {
+        for(int j = arr.size() - 1; j > sortedIndex; j--) {
+            if (arr[j] < arr[j-1]) {
+                arr[j] += arr[j-1];
+                arr[j-1] = arr[j] - arr[j-1];
+                arr[j] = arr[j] - arr[j-1];
+            }
+        }
+        sortedIndex++;
+    }
+    return arr;
+}
+
+
+
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+vector<int> bubbleSort(vector<int> arr) {
+    int sortedIndex = 0;
+    for(int j = 0; j < arr.size()-1; j++) {
+        if (arr[j] > arr[j+1]) {
+            arr[j] += arr[j+1];
+            arr[j+1] = arr[j] - arr[j+1];
+            arr[j] = arr[j] - arr[j+1];
+        }
+    }
+    return arr;
+}
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    vector<int> arr;
+    int arrLength;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> arrLength;
+        for(int j = 0; j < arrLength; j++) {
+            cin >> temp;
+            arr.push_back(temp);
+        }
+        arr = bubbleSort(arr);
+        for(int j = 0; j <arr.size(); j++) {
+            cout<<arr[j]<<' ';
+        }
+        cout<<endl;
+        arr.clear();
+        getchar();
+    }
+}
+
+// 1004
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+void mergeSort(vector<int>& arr, int l , int r, int level) {
+    if (l == r) return;
+    int mid = (l + r) >> 1;
+    mergeSort(arr, l, mid, level+1);
+    mergeSort(arr, mid+1, r, level +1);
+    if (level < 3) return;
+    
+    vector<int> tempArr;
+    int index1 = l, index2 = mid+1;
+    while(index1 <= mid && index2  <= r) {
+        if (arr[index1] <arr[index2]) {
+            tempArr.push_back(arr[index1++]);
+        } else {
+            tempArr.push_back(arr[index2++]);
+        }
+    }
+    while(index1 <= mid) {
+        tempArr.push_back(arr[index1++]);
+    }
+    while(index2 <= r) {
+        tempArr.push_back(arr[index2++]);
+    }
+    for (int i = l; i <= r; i++) {
+        arr[i] = tempArr[i-l];
+    }
+}
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    vector<int> arr;
+    int arrLength;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> arrLength;
+        for(int j = 0; j < arrLength; j++) {
+            cin >> temp;
+            arr.push_back(temp);
+        }
+        mergeSort(arr, 0, arrLength-1, 1);
+        for(int j = 0; j <arr.size(); j++) {
+            cout<<arr[j]<<' ';
+        }
+        cout<<endl;
+        arr.clear();
+        getchar();
+    }
+}
+
+
+
+//1005
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+void swap(vector<int> &arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+
+void quickSort(vector<int>& arr, int l , int r, int level) {
+    if (l >= r || level >2) return;
+    int smallerThanXIndex = l;
+    for(int j = l; j <= r; j++) {
+        if (arr[j] < arr[l] ) {
+            swap(arr, ++smallerThanXIndex, j);
+        }
+    }
+    swap(arr, smallerThanXIndex, l);
+    quickSort(arr, l, smallerThanXIndex -1, level+1);
+    quickSort(arr, smallerThanXIndex+1, r, level+1);
+}
+
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    vector<int> arr;
+    int arrLength;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> arrLength;
+        for(int j = 0; j < arrLength; j++) {
+            cin >> temp;
+            arr.push_back(temp);
+        }
+        quickSort(arr, 0, arrLength-1, 1);
+        for(int j = 0; j <arr.size(); j++) {
+            cout<<arr[j]<<' ';
+        }
+        cout<<endl;
+        arr.clear();
+        getchar();
+    }
+}
+
+//1006
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+void swap(vector<int> &arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+void modify(vector<int> &arr, int index, int heapSize) {
+    int smallIndex = index;
+    int leftSonIndex= 2*index + 1, rightSonIndex= 2*index+2;
+    if (leftSonIndex < heapSize && arr[leftSonIndex] <arr[smallIndex]) {
+        smallIndex = leftSonIndex;
+    }
+    if (rightSonIndex <heapSize && arr[rightSonIndex] <arr[smallIndex]) {
+        smallIndex = rightSonIndex;
+    }
+    if (smallIndex != index) {
+        swap(arr, smallIndex, index);
+        modify(arr, smallIndex, heapSize);
+    }
+}
+void heapSort(vector<int>& arr) {
+    int size =arr.size();
+    for(int i = (size >>1) -1; i >= 0; i--) {
+        modify(arr, i, size);
+    }
+}
+
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    vector<int> arr;
+    int arrLength;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> arrLength;
+        for(int j = 0; j < arrLength; j++) {
+            cin >> temp;
+            arr.push_back(temp);
+        }
+        heapSort(arr);
+        for(int j = 0; j <arr.size(); j++) {
+            cout<<arr[j]<<' ';
+        }
+        cout<<endl;
+        arr.clear();
+        getchar();
+    }
+}
+
+
+
+//1007
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+int cal(string& str, int i, int j) {
+    int value = 0;
+    while(i <= j) {
+        value = value*10 + (str[i] - '0');
+        i++;
+    }
+    return value;
+}
+
+// 动态规划 m[j][i] = max{m[j-1][k] * a[i-k]}  a[i-k]表示从k乘到i
+int getBiggestMultiSum(string str, int n, int k) {
+    int pre_N_Multi_Sum[n+1];
+    pre_N_Multi_Sum[0] = 0;
+    for(int i = 1; i <=n; i++) {
+        pre_N_Multi_Sum[i] = pre_N_Multi_Sum[i-1]*10 + (str[i-1] - '0');
+    }
+    int m[k+1][n+1];
+    for(int j = 0; j <= k; j++) {
+		// i从j+1开始，因为j表示划分为j+1段
+        for(int i = j+1; i <= n; i++) {
+            if (j == 0) m[j][i] = pre_N_Multi_Sum[i];
+            else {
+				// cal函数中注意str的对应索引要比n k 小1
+				// i从j开始，因为j-1表示划分为j段
+                int max = m[j-1][j] * cal(str, j, i-1);
+                for(int p = j; p < i; p++ ) {
+					// 注意str的对应索引要比n k 小1
+                    int temp = m[j-1][p] * cal(str, p, i-1);
+                    max = (temp > max)?temp:max;
+                }
+                m[j][i] = max;
+            }
+        }
+    }
+    return m[k][n];
+}
+
+
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    int n;
+    int k;
+    string val;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> n;
+        cin >>k;
+        getchar();
+        getline(cin, val);
+        cout<<getBiggestMultiSum(val, n, k)<<endl;
+    }
+}
+
+
+//1009朴素版
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// 思路同最长上升子序列
+int maxMulti(vector<int> &arr) {
+    int size = arr.size();
+    vector<int> ans(size);
+    
+    for(int i = 1; i < size; i++) {
+        for(int j = 0; j < i; j++) {
+            if (arr[i] < arr[j]) {
+                ans[i] = max(ans[j]+1, ans[i]);
+            }
+        }
+    }
+    int maxAns = 0;
+    for(int i = 0; i <size; i++) {
+        maxAns = max(maxAns, ans[i]);
+    }
+    return maxAns+1;
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int missileNum;
+	int temp;
+	vector<int> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> missileNum;
+	    for(int j = 0; j <missileNum; j++) {
+	        cin >>temp;
+	        arr.push_back(temp);
+	    }
+	    cout<< maxMulti(arr) <<endl;
+	    getchar();
+	    arr.clear();
+	}
+}
+
+// 1009贪心+二分法
+
+
+// 1011 复杂度介于o(n^2) 到 o(nlogn)之间
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+struct position{
+    position(int a, int b):x(a),y(b){}
+    int x;
+    int y;
+};
+
+double getDistance(const position&a, const position&b) {
+    return 1.0* (a.x - b.x)*(a.x - b.x) + 1.0*(a.y - b.y)*(a.y - b.y);
+}
+// 按x y 降序
+bool cmp_xy(const position&a, const position&b) {
+    if (a.x != b.x) {
+        return b.x > a.x;
+    } else {
+        return b.y > a.y;
+    }
+}
+// 按y降序
+bool cmp_y(const position&a, const position&b) {
+    return b.y >a.y;
+}
+double nearestPair(vector<position> &arr, int i, int j, vector<position> &arr_temp) {
+    if (i == j) return 0x7fffffff;
+    if (i + 1 == j) return getDistance(arr[i], arr[j]);
+    int midIndex = ((i+j)>>1);
+    int midx = arr[midIndex].x;
+    double d1 = nearestPair(arr, i , midIndex, arr_temp);
+    // cout<<d1<<endl;
+    double d2 = nearestPair(arr, midIndex+1, j, arr_temp);
+    // cout<<d2<<endl;
+    double minDis = min(d1, d2);
+    
+    arr_temp.clear();
+    for(int curr = i; curr <= j; curr++) {
+        if (abs(midx - arr[curr].x) < minDis) {
+            // cout<<"get"<<endl;
+            arr_temp.push_back(position(arr[curr].x,arr[curr].y));
+        }
+    }
+    // 复杂度应该优化为o(n)
+    sort(arr_temp.begin(), arr_temp.end(), cmp_y);
+    int sizeOfArrTemp = arr_temp.size();
+    // cout<<"sizeOfArrTemp "<<sizeOfArrTemp<<endl;
+    for(int curr = 0; curr < sizeOfArrTemp; curr++) {
+        for(int neighbor = curr+1; neighbor <= curr+6 && neighbor <sizeOfArrTemp; neighbor++) {
+            double dis = getDistance(arr_temp[curr], arr_temp[neighbor]);
+            minDis = min(minDis, dis);
+        }
+    }
+    
+    return minDis;
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum;
+	vector<position> arr;
+	vector<position> arr_temp;
+	int tempx, tempy;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>tempx>>tempy;
+	        arr.push_back(position(tempx, tempy));
+	    }
+	    sort(arr.begin(), arr.end(), cmp_xy);
+	   // cout<<sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp))<<endl;
+	    printf("%.2lf\n", sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp)));
+	   // for(int j = 0; j <arr.size(); j++) {
+	   //     cout << arr[j].x << ' '<<arr[j].y <<' ';
+	   // }
+	   // cout << endl;
+	   // cout<<arr.size()<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}
+}
+
+
+//1011 o(nlogn)
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+struct position{
+    position(int a, int b):x(a),y(b){}
+    int x;
+    int y;
+};
+
+double getDistance(const position&a, const position&b) {
+    return 1.0* (a.x - b.x)*(a.x - b.x) + 1.0*(a.y - b.y)*(a.y - b.y);
+}
+// 按x y 降序
+bool cmp_xy(const position&a, const position&b) {
+    if (a.x != b.x) {
+        return b.x > a.x;
+    } else {
+        return b.y > a.y;
+    }
+}
+// 按y降序
+bool cmp_y(const position&a, const position&b) {
+    return b.y >a.y;
+}
+// 按x降序
+bool cmp_x(const position&a, const position&b) {
+    return b.x >a.x;
+}
+double nearestPair(vector<position> &arr, int i, int j, vector<position> &arr_temp) {
+    if (i == j) return 0x7fffffff;
+    if (i + 1 == j) return getDistance(arr[i], arr[j]);
+    int midIndex = ((i+j)>>1);
+    int midx = arr[midIndex].x;
+    double d1 = nearestPair(arr, i , midIndex, arr_temp);
+    // cout<<d1<<endl;
+    double d2 = nearestPair(arr, midIndex+1, j, arr_temp);
+    // cout<<d2<<endl;
+    double minDis = min(d1, d2);
+    
+    arr_temp.clear();
+    // 复杂度应该优化为o(n)
+    // for(int curr = i; curr <= j; curr++) {
+    //     if (abs(midx - arr[curr].x) < minDis) {
+    //         // cout<<"get"<<endl;
+    //         arr_temp.push_back(position(arr[curr].x,arr[curr].y));
+    //     }
+    // }
+    // sort(arr_temp.begin(), arr_temp.end(), cmp_y);
+    
+    
+    int index1 = i, index2 = midIndex+1;
+    while(index1 <= midIndex && index2 <= j) {
+        if (arr[index1].y <= arr[index2].y) {
+            arr_temp.push_back(arr[index1++]);
+        } else {
+            arr_temp.push_back(arr[index2++]);
+        }
+    }
+    while(index1 <= midIndex) {
+        arr_temp.push_back(arr[index1++]);
+    }
+    while(index2 <= j) {
+        arr_temp.push_back(arr[index2++]);
+    }
+    for(int k = 0; k < arr_temp.size(); k++) {
+        arr[i+k] = arr_temp[k];
+    }
+    arr_temp.clear();
+    for(int curr = i; curr <= j; curr++) {
+        if (abs(midx - arr[curr].x) < minDis) {
+            // cout<<"get"<<endl;
+            arr_temp.push_back(position(arr[curr].x,arr[curr].y));
+        }
+    }
+    
+    
+    int sizeOfArrTemp = arr_temp.size();
+    // cout<<"sizeOfArrTemp "<<sizeOfArrTemp<<endl;
+    for(int curr = 0; curr < sizeOfArrTemp; curr++) {
+        for(int neighbor = curr+1; neighbor <= curr+6 && neighbor <sizeOfArrTemp; neighbor++) {
+            double dis = getDistance(arr_temp[curr], arr_temp[neighbor]);
+            minDis = min(minDis, dis);
+        }
+    }
+    
+    return minDis;
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum;
+	vector<position> arr;
+	vector<position> arr_temp;
+	int tempx, tempy;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>tempx>>tempy;
+	        arr.push_back(position(tempx, tempy));
+	    }
+	    sort(arr.begin(), arr.end(), cmp_xy);
+	   // cout<<sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp))<<endl;
+	    printf("%.2lf\n", sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp)));
+	   // for(int j = 0; j <arr.size(); j++) {
+	   //     cout << arr[j].x << ' '<<arr[j].y <<' ';
+	   // }
+	   // cout << endl;
+	   // cout<<arr.size()<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

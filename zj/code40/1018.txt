@@ -1,0 +1,65 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct Pair{
+    Pair(int a, int b):size(a),value(b){}
+    int size;
+    int value;
+};
+
+// 转移方程 F(i,C)=max(F(i−1,C),v(i)+F(i−1,C−w(i)))
+// F(n,c)表示将前n个物品放进容量为C的背包里能得到的最大的价值
+int packageFunc(vector<Pair> &arr, int num, int capacity) {
+    vector<vector<int>> ans(num+1);
+    for(int i = 0; i <= num; i++) {
+        ans[i].resize(capacity+1);
+    }
+	// 初始化ans[0][1..capacity]为-1, 表示无法刚好填满背包的情况
+    for(int i = 1; i <= capacity; i++) {
+        ans[0][i] = -1;
+    }
+    for(int i = 1; i <= num; i++) {
+        for(int j = 1; j <= capacity; j++) {
+            int temp1 = ans[i-1][j];
+			// 这里注意考虑当前物品size比容量大的情况，赋值为-1
+			// 同样，如果子问题为-1，则不考虑，也就是赋值为-1
+			int temp2;
+			if (arr[i-1].size > j || ans[i-1][j-arr[i-1].size] == -1) {
+			    temp2 = -1;
+			} else {
+			    temp2 = arr[i-1].value + ans[i-1][j-arr[i-1].size];
+			}
+            ans[i][j] = max(temp1, temp2);
+            // cout<<i<<" "<<j<<" "<<ans[i][j]<<endl;
+        }
+    }
+    return ans[num][capacity]>=0?ans[num][capacity]:0;
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int num, capacity;
+	int tempSize, tempValue;
+	vector<Pair> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> num >>capacity;
+	    getchar();
+	    for(int j = 0; j <num; j++) {
+	        cin >>tempSize>>tempValue;
+	        arr.push_back(Pair(tempSize, tempValue));
+	    }
+	    cout<< packageFunc(arr, num, capacity)<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

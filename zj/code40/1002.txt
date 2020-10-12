@@ -1,0 +1,31 @@
+//1002
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    string input;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        getline(cin, input);
+        stringstream stringin(input);
+        stringin >> temp;
+        int min_1 = 1001;
+        int min_2 = 1000;
+        while(stringin >> temp) {
+            if (temp <min_1) {
+                min_2 = min_1;
+                min_1 = temp;
+            } else if (temp < min_2) {
+                min_2 = temp;
+            }
+        }
+        cout<< min_2<<endl;
+    }
+}

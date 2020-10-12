@@ -1,0 +1,112 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <queue>
+using namespace std;
+// 有限制的单源最短路径
+// 使用二维数组ans[i][j]表示从源节点到节点i花费j元的最短路径
+// (标准迪杰斯特拉中ans[j]表示从源节点到节点i的最短路径)
+struct Pair{
+    Pair(int n, int d, int t):node(n),distance(d),toll(t){}
+    int node;
+    int distance;
+    int toll;
+    bool operator<(const Pair& a) const
+    {
+        return distance < a.distance;
+    }
+};
+
+struct tmp2 //重写仿函数
+{
+    bool operator() (Pair a, Pair b) 
+    {
+        return a.distance > b.distance; //看清楚了，这里是最小值优先
+    }
+};
+// int shortestPath(vector<int> arr) {
+//     priority_queue<tmp1, vector<tmp1>, tmp2> f;
+// }
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum, edgeNum, src, dest, account;
+	int toll;
+	int tempHead, tempTail, tempVal;
+	for(int i = 0; i <caseNum; i++) {
+	    // found表示发现了可行最优路径
+		bool found = false;
+	    cin >> nodeNum >> edgeNum >>src >> dest>>account;
+	    getchar();
+	    vector<int> tolls(nodeNum+1);
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>toll;
+	        tolls[j+1] = toll;
+	    }
+	    getchar();
+	    vector<vector<Pair>> graph(nodeNum+1);
+	    vector<vector<int>> ans(nodeNum+1, vector<int>(account+1, -1));
+	   // for(int j = 0; j <= nodeNum; j++) {
+	   //     vector<int> a(account+1, -1);
+	   //     ans.push_back(a);
+	   // }
+	   //for(int j = 1; j <= nodeNum; j++) {
+	   //    for(int k = 1; k <= account; k++) {
+	   //        cout<<ans[j][k]<<" ";
+	   //    }
+	   //}
+	   //cout<<endl;
+	    ans[src][0] = 0;
+	    for(int j = 0; j <edgeNum; j++) {
+	        cin >> tempHead >> tempTail >>tempVal;
+	       // cout<<tempHead<<tempTail<<tempVal<<endl;
+	        getchar();
+	        graph[tempHead].push_back(Pair(tempTail, tempVal, tolls[tempTail]));
+	        graph[tempTail].push_back(Pair(tempHead, tempVal, tolls[tempHead]));
+	    }
+	    priority_queue<Pair, vector<Pair>, tmp2> queue;
+	    queue.push(Pair(src, 0, 0));
+	    
+	    while(!queue.empty()) {
+	        Pair temp = queue.top();
+	        queue.pop();
+	        int tempNode = temp.node;
+	        int tempDis = temp.distance;
+	        int tempToll = temp.toll;
+	        // 无法支付过路费，不用继续判断，，但是理论上代码不可能出现这种情况(下面已经判断了)
+	        if (tempToll > account) continue;
+	        // 这时候必然是能够支付过路费的最短路径
+	        if (tempNode == dest) {
+	            found = true;
+	            cout<<tempDis<<endl;
+	            break;
+	        }
+	        // 如果不满足条件则表示到达tempNode的过路费为tempToll的最短路径，虽然可能不是最短路径，但是可能费用较低
+	        // 也就是更有可能到达目标节点
+	        if (tempDis > ans[tempNode][tempToll]) continue;
+	        for(int j = 0; j < graph[tempNode].size(); j++) {
+	            Pair neighbor = graph[tempNode][j];
+	            int neighborNode = neighbor.node;
+	            int neighborDis = neighbor.distance;
+	            int neighborToll = neighbor.toll;
+	            int newDis = tempDis + neighborDis;
+	            int newToll = tempToll+neighborToll;
+	            // 注意这里要确认过路费总额是否超标，否则可能数组越界
+	            if (newToll > account) continue;
+	            if (ans[neighborNode][newToll] == (-1) || newDis < ans[neighborNode][newToll]) {
+	                ans[neighborNode][newToll] = newDis;
+	                queue.push(Pair(neighborNode, newDis,newToll));
+	            }
+	        }
+	    }
+	    if (!found) {
+	        cout<<-1<<endl;
+	    }
+	}
+}

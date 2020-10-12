@@ -1,0 +1,60 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// 基于merge排序  时间复杂度o(nlogn) 使用辅助数组空间复杂度o(n)
+// 左右数组合并时，如果选择右数组中的元素，则pairNum加上左数组中还没考虑的元素数量
+void getInversePair(vector<int> &arr, vector<int> &copyarr, int head, int tail, int &pairNum) {
+    if (head == tail) return;
+    int mid = (head + tail) >>1;
+    getInversePair(arr, copyarr, head, mid, pairNum);
+    getInversePair(arr, copyarr, mid+1, tail, pairNum);
+    int index1 = head, index2 = mid+1;
+    int indexOfcopyarr = head;
+    while(index1 <= mid && index2 <= tail) {
+        if (arr[index1] <= arr[index2]) {
+            copyarr[indexOfcopyarr++] = arr[index1++];
+        } else {
+            copyarr[indexOfcopyarr++] = arr[index2++];
+            pairNum += (mid - index1 + 1);
+        }
+    }
+    while(index1 <= mid) {
+        copyarr[indexOfcopyarr++] = arr[index1++];
+    }
+    while(index2 <= tail) {
+        copyarr[indexOfcopyarr++] = arr[index2++];
+    }
+    for(int i = head; i <= tail; i++) {
+        arr[i] = copyarr[i];
+    }
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum;
+	vector<int> arr;
+	int temp;
+	int pairNum;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    vector<int> copyarr(nodeNum);
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>temp;
+	        arr.push_back(temp);
+	    }
+	    pairNum = 0;
+	    getInversePair(arr, copyarr, 0 , nodeNum-1, pairNum);
+	    cout<<pairNum<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

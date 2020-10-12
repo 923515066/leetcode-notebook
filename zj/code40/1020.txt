@@ -1,0 +1,57 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <string.h>
+using namespace std;
+// 转移方程 p(i,j) = argmax_k( p(i,k) + p(k+1,j) + arr[i].row * arr[k].col*arr[j].col)
+// k from 0 to (j-i-1)
+// 用vector和struct超时，绝了。。
+// int 赋值0x7fffffff好像是-1。。
+int MatrixMulti(int arr[][2], int m) {
+    int pairNum = m;
+    unsigned int **ans = new unsigned int*[pairNum];
+    for(int i = 0; i < pairNum; i++) {
+        ans[i] = new unsigned int[pairNum];
+        memset(ans[i], 0x7fffffff, pairNum*sizeof(unsigned int));
+    }
+    
+    // i+1 表示连乘长度
+    for(int i = 0; i < pairNum; i++) {
+        for(int j = 0; j < pairNum-i ; j++) {
+            if (i == 0) ans[j][j] = 0;
+            else {
+                for(int k = 0; k < i; k++) {
+                    ans[j][j+i] = min(ans[j][j+i], ans[j][j+k] + ans[j+k+1][j+i] + arr[j][0]*arr[j+k][1]*arr[j+i][1] );
+                }
+            }
+        }
+    }
+    return ans[0][pairNum-1];
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int num;
+	int tempRow, tempColumn;;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> num;
+	    getchar();
+	    int arr[num][2];
+	    for(int j = 0; j <num; j++) {
+	        cin >>tempRow>>tempColumn;
+	        arr[j][0] = tempRow;
+	        arr[j][1] = tempColumn;
+	    }
+	    cout<< MatrixMulti(arr, num)<<endl;
+	    getchar();
+	}
+}

@@ -1,0 +1,115 @@
+//1009朴素版
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// 思路同最长上升子序列
+int maxMulti(vector<int> &arr) {
+    int size = arr.size();
+    vector<int> ans(size);
+    
+    for(int i = 1; i < size; i++) {
+        for(int j = 0; j < i; j++) {
+            if (arr[i] < arr[j]) {
+                ans[i] = max(ans[j]+1, ans[i]);
+            }
+        }
+    }
+    int maxAns = 0;
+    for(int i = 0; i <size; i++) {
+        maxAns = max(maxAns, ans[i]);
+    }
+    return maxAns+1;
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int missileNum;
+	int temp;
+	vector<int> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> missileNum;
+	    for(int j = 0; j <missileNum; j++) {
+	        cin >>temp;
+	        arr.push_back(temp);
+	    }
+	    cout<< maxMulti(arr) <<endl;
+	    getchar();
+	    arr.clear();
+	}
+}
+
+// 1009贪心+二分法
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// 贪心+二分法
+// 贪心策略：我们使得每个长度的非上升子序列的最后一个值都尽可能大 这样就能获得更长的非上升子序列
+// 注意 下降子序列和非上升子序列有一点不同，看注释
+int maxMulti(vector<int> &arr) {
+    int size = arr.size();
+    if (size <= 1) return size;
+    // tail[i]表示t+1长度的非上升子序列最后一个值最大的情况
+    vector<int> tail(size);
+    tail[0] = arr[0];
+    // end表示当前最长非上升子序列长度-1  方便索引
+    int end = 0;
+    
+    
+    for(int i = 1; i < size; i++) {
+		// 若为下降子序列 这里是<
+        if(arr[i] <= tail[end]) {
+            end++;
+            tail[end] = arr[i];
+        } else {
+            int left = 0, right = end;
+            // tail是一个非递增数组
+            // 二分法找比arr[i] “大于或者等于” 的最小的数t_i(这个数右边就是比arr[i]小的最大的数t_i+1, 然后替换t_i+1，因为我们可以保证arr[i] <=t_i)
+            while(left <right) {
+                int mid = left + ((right - left) >> 1);
+				// 若为下降子序列 这里是<
+                if (arr[i] <= tail[mid]) {
+                    left = mid+1;
+                } else {
+                    right = mid;
+                }
+            }
+            tail[left] = arr[i];
+        }
+    }
+    return end+1;
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int missileNum;
+	int temp;
+	vector<int> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> missileNum;
+	    for(int j = 0; j <missileNum; j++) {
+	        cin >>temp;
+	        arr.push_back(temp);
+	    }
+	    cout<< maxMulti(arr) <<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

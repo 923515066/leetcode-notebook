@@ -57,7 +57,8 @@ class Solution {
                 tail[end] = nums[i];
             } else {
                 int left = 0, right = end;
-                // 二分法选取比nums[i]大的最小的数
+                // 二分法选取比nums[i]小的最大的数t_i
+				// (这个数右边就是比arr[i]大的最小的数t_i+1, 然后替换t_i+1，因为我们可以保证arr[i] >t_i)
                 while(left <right) {
                     int mid = left + ((right - left) >>> 1);
 					if (tail[mid] < nums[i]) {

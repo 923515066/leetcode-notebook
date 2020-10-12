@@ -1,0 +1,223 @@
+// 1011 复杂度介于o(n^2) 到 o(nlogn)之间
+// 最近点对 分治思想
+// 先按x轴升序排序
+// 根据x轴找左右半区的最小距离d 然后以坐标x值中位线在（-d  d）范围内将点以y值升序/降序排序，然后
+//遍历每个点与最近6个点的距离
+//nearestPair函数中用到sort  复杂度不是PPT里的O(N)
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+struct position{
+    position(int a, int b):x(a),y(b){}
+    int x;
+    int y;
+};
+
+double getDistance(const position&a, const position&b) {
+    return 1.0* (a.x - b.x)*(a.x - b.x) + 1.0*(a.y - b.y)*(a.y - b.y);
+}
+// 按x y 降序
+bool cmp_xy(const position&a, const position&b) {
+    if (a.x != b.x) {
+        return b.x > a.x;
+    } else {
+        return b.y > a.y;
+    }
+}
+// 按y降序
+bool cmp_y(const position&a, const position&b) {
+    return b.y >a.y;
+}
+double nearestPair(vector<position> &arr, int i, int j, vector<position> &arr_temp) {
+    if (i == j) return 0x7fffffff;
+    if (i + 1 == j) return getDistance(arr[i], arr[j]);
+    int midIndex = ((i+j)>>1);
+    int midx = arr[midIndex].x;
+    double d1 = nearestPair(arr, i , midIndex, arr_temp);
+    // cout<<d1<<endl;
+    double d2 = nearestPair(arr, midIndex+1, j, arr_temp);
+    // cout<<d2<<endl;
+    double minDis = min(d1, d2);
+    
+    arr_temp.clear();
+    for(int curr = i; curr <= j; curr++) {
+        if (abs(midx - arr[curr].x) < minDis) {
+            // cout<<"get"<<endl;
+            arr_temp.push_back(position(arr[curr].x,arr[curr].y));
+        }
+    }
+    // 复杂度应该优化为o(n)
+    sort(arr_temp.begin(), arr_temp.end(), cmp_y);
+    int sizeOfArrTemp = arr_temp.size();
+    // cout<<"sizeOfArrTemp "<<sizeOfArrTemp<<endl;
+    for(int curr = 0; curr < sizeOfArrTemp; curr++) {
+        for(int neighbor = curr+1; neighbor <= curr+6 && neighbor <sizeOfArrTemp; neighbor++) {
+            double dis = getDistance(arr_temp[curr], arr_temp[neighbor]);
+            minDis = min(minDis, dis);
+        }
+    }
+    
+    return minDis;
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum;
+	vector<position> arr;
+	vector<position> arr_temp;
+	int tempx, tempy;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>tempx>>tempy;
+	        arr.push_back(position(tempx, tempy));
+	    }
+	    sort(arr.begin(), arr.end(), cmp_xy);
+	   // cout<<sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp))<<endl;
+	    printf("%.2lf\n", sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp)));
+	   // for(int j = 0; j <arr.size(); j++) {
+	   //     cout << arr[j].x << ' '<<arr[j].y <<' ';
+	   // }
+	   // cout << endl;
+	   // cout<<arr.size()<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}
+}
+
+
+
+//1011 o(nlogn)
+// 思路和上一种相同 但是在分治的每一层递归中把当前范围内的点按y排序
+// 这样在上一层递归可以直接合并两个有序数组 不需要sort
+// 其实就是借鉴了mergesort思想 这样每层排序复杂度和PPT中相同为o(n)
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+struct position{
+    position(int a, int b):x(a),y(b){}
+    int x;
+    int y;
+};
+
+double getDistance(const position&a, const position&b) {
+    return 1.0* (a.x - b.x)*(a.x - b.x) + 1.0*(a.y - b.y)*(a.y - b.y);
+}
+// 按x y 降序
+bool cmp_xy(const position&a, const position&b) {
+    if (a.x != b.x) {
+        return b.x > a.x;
+    } else {
+        return b.y > a.y;
+    }
+}
+// 按y降序
+bool cmp_y(const position&a, const position&b) {
+    return b.y >a.y;
+}
+// 按x降序
+bool cmp_x(const position&a, const position&b) {
+    return b.x >a.x;
+}
+double nearestPair(vector<position> &arr, int i, int j, vector<position> &arr_temp) {
+    if (i == j) return 0x7fffffff;
+    if (i + 1 == j) return getDistance(arr[i], arr[j]);
+    int midIndex = ((i+j)>>1);
+    int midx = arr[midIndex].x;
+    double d1 = nearestPair(arr, i , midIndex, arr_temp);
+    // cout<<d1<<endl;
+    double d2 = nearestPair(arr, midIndex+1, j, arr_temp);
+    // cout<<d2<<endl;
+    double minDis = min(d1, d2);
+    
+    arr_temp.clear();
+    // 复杂度应该优化为o(n)
+    // for(int curr = i; curr <= j; curr++) {
+    //     if (abs(midx - arr[curr].x) < minDis) {
+    //         // cout<<"get"<<endl;
+    //         arr_temp.push_back(position(arr[curr].x,arr[curr].y));
+    //     }
+    // }
+    // sort(arr_temp.begin(), arr_temp.end(), cmp_y);
+    
+    
+    int index1 = i, index2 = midIndex+1;
+    while(index1 <= midIndex && index2 <= j) {
+        if (arr[index1].y <= arr[index2].y) {
+            arr_temp.push_back(arr[index1++]);
+        } else {
+            arr_temp.push_back(arr[index2++]);
+        }
+    }
+    while(index1 <= midIndex) {
+        arr_temp.push_back(arr[index1++]);
+    }
+    while(index2 <= j) {
+        arr_temp.push_back(arr[index2++]);
+    }
+    for(int k = 0; k < arr_temp.size(); k++) {
+        arr[i+k] = arr_temp[k];
+    }
+    arr_temp.clear();
+    for(int curr = i; curr <= j; curr++) {
+        if (abs(midx - arr[curr].x) < minDis) {
+            // cout<<"get"<<endl;
+            arr_temp.push_back(position(arr[curr].x,arr[curr].y));
+        }
+    }
+    
+    
+    int sizeOfArrTemp = arr_temp.size();
+    // cout<<"sizeOfArrTemp "<<sizeOfArrTemp<<endl;
+    for(int curr = 0; curr < sizeOfArrTemp; curr++) {
+        for(int neighbor = curr+1; neighbor <= curr+6 && neighbor <sizeOfArrTemp; neighbor++) {
+            double dis = getDistance(arr_temp[curr], arr_temp[neighbor]);
+            minDis = min(minDis, dis);
+        }
+    }
+    
+    return minDis;
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	int nodeNum;
+	vector<position> arr;
+	vector<position> arr_temp;
+	int tempx, tempy;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>tempx>>tempy;
+	        arr.push_back(position(tempx, tempy));
+	    }
+		// 没试过这里把cmp_xy换成cmp_x有什么区别。。
+	    sort(arr.begin(), arr.end(), cmp_xy);
+	   // cout<<sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp))<<endl;
+	    printf("%.2lf\n", sqrt(nearestPair(arr, 0, nodeNum-1, arr_temp)));
+	   // for(int j = 0; j <arr.size(); j++) {
+	   //     cout << arr[j].x << ' '<<arr[j].y <<' ';
+	   // }
+	   // cout << endl;
+	   // cout<<arr.size()<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

@@ -1,0 +1,59 @@
+//1006
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+void swap(vector<int> &arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+void modify(vector<int> &arr, int index, int heapSize) {
+    int smallIndex = index;
+    int leftSonIndex= 2*index + 1, rightSonIndex= 2*index+2;
+    if (leftSonIndex < heapSize && arr[leftSonIndex] <arr[smallIndex]) {
+        smallIndex = leftSonIndex;
+    }
+    if (rightSonIndex <heapSize && arr[rightSonIndex] <arr[smallIndex]) {
+        smallIndex = rightSonIndex;
+    }
+    if (smallIndex != index) {
+        swap(arr, smallIndex, index);
+        modify(arr, smallIndex, heapSize);
+    }
+}
+void heapSort(vector<int>& arr) {
+    int size =arr.size();
+    for(int i = (size >>1) -1; i >= 0; i--) {
+        modify(arr, i, size);
+    }
+}
+
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    vector<int> arr;
+    int arrLength;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> arrLength;
+        for(int j = 0; j < arrLength; j++) {
+            cin >> temp;
+            arr.push_back(temp);
+        }
+        heapSort(arr);
+        for(int j = 0; j <arr.size(); j++) {
+            cout<<arr[j]<<' ';
+        }
+        cout<<endl;
+        arr.clear();
+        getchar();
+    }
+}

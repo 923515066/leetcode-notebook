@@ -1,0 +1,61 @@
+// 1003
+
+// bubbleSort
+vector<int> bubbleSort(vector<int> arr) {
+    int sortedIndex = 0;
+    for(int i = 0; i < arr.size(); i++) {
+        for(int j = arr.size() - 1; j > sortedIndex; j--) {
+            if (arr[j] < arr[j-1]) {
+                arr[j] += arr[j-1];
+                arr[j-1] = arr[j] - arr[j-1];
+                arr[j] = arr[j] - arr[j-1];
+            }
+        }
+        sortedIndex++;
+    }
+    return arr;
+}
+
+
+
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+using namespace std;
+vector<int> bubbleSort(vector<int> arr) {
+    int sortedIndex = 0;
+    for(int j = 0; j < arr.size()-1; j++) {
+        if (arr[j] > arr[j+1]) {
+            arr[j] += arr[j+1];
+            arr[j+1] = arr[j] - arr[j+1];
+            arr[j] = arr[j] - arr[j+1];
+        }
+    }
+    return arr;
+}
+
+int main() {
+    int caseNum;
+    cin >> caseNum;
+    getchar();
+    vector<int> arr;
+    int arrLength;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin >> arrLength;
+        for(int j = 0; j < arrLength; j++) {
+            cin >> temp;
+            arr.push_back(temp);
+        }
+        arr = bubbleSort(arr);
+        for(int j = 0; j <arr.size(); j++) {
+            cout<<arr[j]<<' ';
+        }
+        cout<<endl;
+        arr.clear();
+        getchar();
+    }
+}
