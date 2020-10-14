@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include "stdio.h"
+using namespace std;
+// bool getTarget(int arr[], int target, int row, int col) {
+//     int rowIndex = 0, colIndex = col-1;
+//     while(rowIndex<row && colIndex>=0) {
+//         if (arr[rowIndex*col + colIndex] > target) {
+//             colIndex--;
+//         } else if (arr[rowIndex*col + colIndex] < target) {
+//             rowIndex++;
+//         } else {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+
+int main()
+{
+    int caseNum;
+    int row, col, target;
+    int temp;
+    cin>>caseNum;
+    getchar();
+    for(int i = 0; i < caseNum; i++) {
+    	cin>>row>>col>>target;
+        getchar();
+        int *arr = new int [row*col];
+        // arr.resize(row);
+        for(int j = 0; j < row; j++) {
+        	for(int k  = 0; k < col; k++) {
+                cin>>temp;
+                arr[j*col + k] = temp;
+            }
+            getchar();
+    	}
+    	bool found = false;
+    	int rowIndex = 0, colIndex = col-1;
+        while(rowIndex<row && colIndex>=0) {
+            if (arr[rowIndex*col + colIndex] > target) {
+                colIndex--;
+            } else if (arr[rowIndex*col + colIndex] < target) {
+                rowIndex++;
+            } else {
+                found = true;
+                break;
+            }
+        }
+        cout<< (found?"true":"false")<<endl;
+    // 	cout<<(getTarget(arr, target, row, col)?"true":"false")<<endl;
+    	delete[] arr;
+    }
+    return 0;
+}
