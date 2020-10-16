@@ -1,0 +1,92 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// wp表示key权值 0..n个 数组中是累加值 wp[j] - wp[i]表示前i+1 到 j的累加值, 方便区间获取
+// wq表示间隙权值 0..n+1个 同理
+double BBST(vector<double> &wp, vector<double> &wq) {
+    int keyNum = wp.size();
+	// 实际上不需要w，已经构造了wp 和 wq 
+    // w[i,j]表示i到j-1的权值和 所以j>i
+    // w[1,2] = wp[2-1] - wp[0] + wq[2] - wp[0]
+    // if i == 0 w[i, j] = wp[j-1] + wq[j]
+    // else w[i, j] = wp[j-1]- wp[i-1] +wq[j] - wq[i-1]
+    vector<vector<double>> ans(keyNum+1, vector<double>(keyNum+1,1000000));
+	// ans[i][i]初始化为0
+    for(int i = 0; i <= keyNum; i++) ans[i][i] = 0;
+    
+    for(int i = 1; i <= keyNum; i++) {
+        for(int j = 0; j + i <= keyNum; j++) {
+			// j == 0在求wp wq累加值时不需要减去区间前的
+            if (j == 0) {
+				// i == 1表示只有一个节点
+                if (i == 1) {
+                    ans[j][i+j] = wp[i+j-1] + wq[i+j];
+                } else {
+                    double wpPluswq = wp[i+j-1] + wq[i+j];
+                    for(int k = j; k < i+j; k++) {
+                        ans[j][i+j] = min(ans[j][i+j], wpPluswq + ans[j][k] + ans[k+1][i+j]);
+                    }
+                }
+            } else {
+                if (i == 1) {
+                    ans[j][i+j] = wp[i+j-1] - wp[j-1] + wq[i+j] - wq[j-1];
+                } else {
+                    double wpPluswq = wp[i+j-1] - wp[j-1] + wq[i+j] - wq[j-1];
+                    for(int k = j; k < i+j; k++) {
+                        ans[j][i+j] = min(ans[j][i+j], wpPluswq + ans[j][k] + ans[k+1][i+j]);
+                    }
+                }
+            }
+            
+        }
+    }
+    return ans[0][keyNum];
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int num;
+	int tempVal;
+	double tempProb;
+	double preProb = 0.0;
+	vector<double> wp;
+	vector<double> wq;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> num;
+	    getchar();
+	    for(int j = 0; j < num; j++) {
+	        cin>>tempVal;
+	    }
+	    getchar();
+	    preProb = 0.0;
+	    for(int j = 0; j <num; j++) {
+	        cin>>tempProb;
+	        preProb += tempProb;
+	       // cout<<preProb;
+	        wp.push_back(preProb);
+	    }
+	    getchar();
+	    preProb = 0.0;
+	    for(int j = 0; j <=num; j++) {
+	        cin>>tempProb;
+	        preProb += tempProb;
+	       // cout<<preProb;
+	        wq.push_back(preProb);
+	    }
+	    getchar();
+	    printf("%.6lf\n", BBST(wp, wq));
+	   // cout<< BBST(wp, wq)<<endl;
+	    wp.clear();
+	    wq.clear();
+	}
+}

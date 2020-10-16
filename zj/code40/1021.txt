@@ -1,0 +1,50 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct Pair{
+    Pair(int a, int b):size(a),value(b){}
+    int size;
+    int value;
+};
+
+// 转移方程 F(i,C)=max(F(i−1,C),v(i)+F(i−1,C−w(i)))
+// F(n,c)表示将前n个物品放进容量为C的背包里能得到的最大的价值
+int SteelCutting(vector<Pair> &arr, int num, int capacity) {
+    vector<int> ans(capacity+1);
+    for(int i = 1; i <= capacity; i++) {
+        for(int j = 0; j < num; j++) {
+            if (i >= arr[j].size) {
+                ans[i] = max(ans[i], arr[j].value + ans[i-arr[j].size]);    
+            }
+        }
+    }
+    return ans[capacity];
+}
+
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int num, capacity;
+	int tempSize, tempValue;
+	vector<Pair> arr;
+	for(int i = 0; i <caseNum; i++) {
+	    cin >> capacity >>num;
+	    getchar();
+	    for(int j = 0; j <num; j++) {
+	        cin >>tempSize>>tempValue;
+	        arr.push_back(Pair(tempSize, tempValue));
+	    }
+	    cout<< SteelCutting(arr, num, capacity)<<endl;
+	    getchar();
+	    arr.clear();
+	}
+}

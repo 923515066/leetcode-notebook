@@ -45,3 +45,50 @@ class Solution {
         return sum;
     }
 }
+
+
+
+// review  第一遍竟然没写思路。。
+// 两个数组，分别记录当前位置的最长递增子序列长度和个数
+// 在for循环计算dp转化公式时，如果之前的元素index1小于当前元素index2，考虑两种情况：
+// 1.index1的最长递增子序列长度 >= index2的最长递增子序列长度 更新index2两个数组的值
+// 2.index1的最长递增子序列长度 +1 ==  index2的最长递增子序列长度  更新index2最长递增子序列个数
+class Solution {
+    public int findNumberOfLIS(int[] nums) {
+        int size = nums.length;
+        if (size == 0) return 0;
+        // 当前index的最长递增子序列长度
+        int []LISofCurrIndex = new int[size];
+        // 当前index的最长递增子序列个数
+        int []LIS_NumofCurrIndex = new int[size];
+        // 最长递增子序列的长度
+        int maxLen = 0;
+        // 最长递增子序列的个数
+        int maxNum = 0;
+
+        // 初始化
+        for(int i = 0; i <size; i++) LIS_NumofCurrIndex[i] = 1;
+        // i表示当前数组第i个数
+        for(int i = 1; i < size; i++) {
+            for(int j = i-1; j >= 0; j--) {
+                if (nums[i] >nums[j]) {
+                    if (LISofCurrIndex[i] == LISofCurrIndex[j] + 1) {
+                        LIS_NumofCurrIndex[i] += LIS_NumofCurrIndex[j];
+                    } else if (LISofCurrIndex[i] <= LISofCurrIndex[j]) {
+                        LISofCurrIndex[i] = LISofCurrIndex[j]+1;
+                        LIS_NumofCurrIndex[i] = LIS_NumofCurrIndex[j];
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < size; i++) {
+            if (LISofCurrIndex[i] == maxLen) {
+                maxNum += LIS_NumofCurrIndex[i];
+            } else if (LISofCurrIndex[i] > maxLen) {
+                maxLen = LISofCurrIndex[i];
+                maxNum = LIS_NumofCurrIndex[i];
+            }
+        }
+        return maxNum;
+    }
+}
