@@ -1,0 +1,39 @@
+// 思路同俄罗斯套娃信封问题
+// 按height升序，weight降序（自顶向下叠罗汉），然后退化为LIS
+// 其实可以按height降序，weight升序的（也就是自底向上叠罗汉），但是后面使用到binarySearch要求dp数组为升序的，所以为了方便改为height升序，weight降序
+class Solution {
+    public int bestSeqAtIndex(int[] height, int[] weight) {
+        int size = height.length;
+        if (size == 0) return 0;
+        int [][]arr = new int[size][2];
+        for(int i = 0; i <size; i++) {
+            arr[i][0] = height[i];
+            arr[i][1] = weight[i];
+        }
+        Arrays.sort(arr, (o1, o2) -> {
+            if (o1[0] == o2[0]) {
+                return o2[1] - o1[1];
+            } else {
+                return o1[0] - o2[0];
+            }
+        });
+        int []secondDim = new int[size];
+        for(int i = 0; i <size; i++) secondDim[i] = arr[i][1];
+        return LDS(secondDim);
+    }
+
+    public int LDS(int []arr) {
+        int end = 0;
+        int size = arr.length;
+        int []dp = new int[size];
+        for(int element : arr) {
+            int index = Arrays.binarySearch(dp, 0, end, element);
+            if (index < 0) {
+                index = -index-1;
+            }
+            dp[index] = element;
+            if (index == end) end++;
+        }
+        return end;
+    }
+}
