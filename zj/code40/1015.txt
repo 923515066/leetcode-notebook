@@ -1,45 +1,44 @@
-// java版本
 class Solution {
-    public ListListInteger getSkyline(int[][] buildings) {
+    public List<List<Integer>> getSkyline(int[][] buildings) {
         return getSkyline(buildings, 0, buildings.length-1); 
     }
 
-    public ListListInteger getSkyline(int[][] buildings, int head, int tail) {
-        if (head  tail) {
-            return new ArrayList();
+    public List<List<Integer>> getSkyline(int[][] buildings, int head, int tail) {
+        if (head > tail) {
+            return new ArrayList<>();
         } else if (head == tail) {
-            ListListInteger ans = new ArrayList();
-            ArrayListInteger h = new ArrayList();
+            List<List<Integer>> ans = new ArrayList<>();
+            ArrayList<Integer> h = new ArrayList<>();
             h.add(buildings[head][0]);h.add(buildings[head][2]);
-            ArrayListInteger t = new ArrayList();
+            ArrayList<Integer> t = new ArrayList<>();
             t.add(buildings[head][1]);t.add(0);
             ans.add(h);ans.add(t);
             return ans;
         } else {
-            int mid = head + ((tail - head)  1);
-            ListListInteger left = getSkyline(buildings, head, mid);
-            ListListInteger right = getSkyline(buildings, mid+1, tail);
+            int mid = head + ((tail - head) >> 1);
+            List<List<Integer>> left = getSkyline(buildings, head, mid);
+            List<List<Integer>> right = getSkyline(buildings, mid+1, tail);
 
             int leftSize = left.size(), rightSize = right.size();
             int leftIndex = 0, rightIndex = 0;
             int leftHeight = 0, rightHeight = 0;
-            ListListInteger ans = new ArrayList();
-            ArrayListInteger temp;
-            while(leftIndex  leftSize && rightIndex  rightSize) {
-                if (left.get(leftIndex).get(0)  right.get(rightIndex).get(0)) {
-                    temp = new ArrayListInteger();
+            List<List<Integer>> ans = new ArrayList<>();
+            ArrayList<Integer> temp;
+            while(leftIndex < leftSize && rightIndex < rightSize) {
+                if (left.get(leftIndex).get(0) < right.get(rightIndex).get(0)) {
+                    temp = new ArrayList<Integer>();
                     temp.add(left.get(leftIndex).get(0));
                     temp.add(Math.max(left.get(leftIndex).get(1), rightHeight));
                     leftHeight = left.get(leftIndex).get(1);
                     leftIndex++;
-                } else if (left.get(leftIndex).get(0)  right.get(rightIndex).get(0)) {
-                    temp = new ArrayListInteger();
+                } else if (left.get(leftIndex).get(0) > right.get(rightIndex).get(0)) {
+                    temp = new ArrayList<Integer>();
                     temp.add(right.get(rightIndex).get(0));
                     temp.add(Math.max(right.get(rightIndex).get(1), leftHeight));
                     rightHeight = right.get(rightIndex).get(1);
                     rightIndex++;
                 } else {
-                    temp = new ArrayListInteger();
+                    temp = new ArrayList<Integer>();
                     temp.add(right.get(rightIndex).get(0));
                     temp.add(Math.max(right.get(rightIndex).get(1), left.get(leftIndex).get(1)));
                     leftHeight = left.get(leftIndex).get(1);
@@ -48,15 +47,15 @@ class Solution {
                     rightIndex++;
                 }
 
-                if (ans.size() == 0  ans.get(ans.size()-1).get(1)  != (int)temp.get(1)) {
+                if (ans.size() == 0 || ans.get(ans.size()-1).get(1)  != (int)temp.get(1)) {
                     ans.add(temp);
                 }
             }
-             无论左右两部分最后一个点也就是天际线结束的点是否在一个坐标上，都能保证最终ans只插入了一个天际线结束点
-            while(leftIndex  leftSize) {
+            // 无论左右两部分最后一个点也就是天际线结束的点是否在一个坐标上，都能保证最终ans只插入了一个天际线结束点
+            while(leftIndex < leftSize) {
                 ans.add(left.get(leftIndex++));
             }
-            while(rightIndex  rightSize) {
+            while(rightIndex < rightSize) {
                 ans.add(right.get(rightIndex++));
             }
             return ans;

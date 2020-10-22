@@ -1,0 +1,59 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// 一开始有点奇怪为什么不需要考虑加号数量这个维度
+// 但是实际上自底向上dp的时候，我们已经把dp[i][0]也就是所有不使用乘号的区间都初始化为直接相加的结果
+// 转换方程中dp[i][j] = argmax(dp[k][j-1] * k+1到1的求和)最右边剩余数字也是直接求和
+// 还有一个问题，有没有可能出现类似(1*2+3)这种情况是最大的，也就是不符合转换方程的情况？
+// 直觉上感觉没有。。可能得证明下最优子结构性质
+long long int getMaxAns(vector<int>& arr, int numOfMulti) {
+    int size = arr.size();
+    vector<int> sumOfCurr(size+1);
+    int sum = 0;
+    for(int i = 1; i <=size; i++) {
+        sum += arr[i-1];
+        sumOfCurr[i] = sum;
+    }
+    
+    int numOfPlus = size - numOfMulti - 1;
+    // dp[i][j]表示i个数字 使用j个乘号的最大乘积结果
+    // dp[i][j] = argmax(dp[k][j-1] * k+1到1的求和)
+    vector<vector<long long int>> dp(size+1, vector<long long int>(numOfMulti+1, 0));
+    for(int i = 1; i <= size; i++) dp[i][0] = sumOfCurr[i];
+    for(int j = 1; j <= numOfMulti; j++) {
+        for(int i = j+1; i <= size; i++) {
+            long long int maxSum = 0;
+            for(int k = j; k < i; k++) {
+                maxSum = max(maxSum, dp[k][j-1] * (sumOfCurr[i] - sumOfCurr[k]));
+            }
+            dp[i][j] = maxSum;
+        }
+    }
+    return dp[size][numOfMulti];
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int num, numOfK;
+	int tempVal;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>num>>numOfK;
+	    getchar();
+	    vector<int> arr(num);
+	    for(int j = 0; j < num; j++) {
+	        cin>>tempVal;
+	        arr[j] = tempVal;
+	    }
+	    getchar();
+	    cout<<getMaxAns(arr, numOfK)<<endl;
+	}
+}

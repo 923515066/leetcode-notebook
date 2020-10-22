@@ -1,0 +1,79 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// 根据边的权值w升序排列
+bool cmp(const vector<int>&a, const vector<int>&b) {
+    return b[2] > a[2];
+}
+
+
+int find(vector<int>& arr, int i) {
+    if (arr[i] != i) {
+        arr[i] = find(arr, arr[i]);
+    }
+    return arr[i];
+}
+// union好像没用，在kruskal函数里实现了
+void Union(vector<int>& arr, int i, int j) {
+    int preOfi = find(arr, i);
+    int preOfj = find(arr, j);
+    if (preOfj != preOfj) {
+        arr[preOfi] = preOfj;
+    }
+}
+
+int kruskal(vector<vector<int>>& arr, int numOfNode) {
+    int size = arr.size();
+    int weightSum = 0;
+    int u,v,w;
+    vector<int> ans(numOfNode+1);
+    for(int i = 1; i <= numOfNode; i++) ans[i] = i;
+    for(int i = 0; i <size; i++) {
+        u = arr[i][0];
+        v = arr[i][1];
+        w = arr[i][2];
+        int preOfU = find(ans, u);
+        int preOfV = find(ans, v);
+        if (preOfV != preOfU) {
+            weightSum+= w;
+            ans[preOfU] = preOfV;
+        }
+    }
+    int numOfRoot = 0;
+    for(int i= 1; i <= numOfNode; i++) {
+        if (ans[i] == i) {
+            numOfRoot++;
+            if (numOfRoot > 1) return -1;
+        }
+    }
+    return weightSum;
+}
+
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int numOfNode, numOfEdge;
+	int u,v,w;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>numOfNode>>numOfEdge;
+	    getchar();
+	    vector<vector<int>> arr(numOfEdge, vector<int>(3));
+	    for(int j = 0; j < numOfEdge; j++) {
+	        cin>>u>>v>>w;
+	        arr[j][0] = u;
+	        arr[j][1] = v;
+	        arr[j][2] = w;
+	        getchar();
+	    }
+	    sort(arr.begin(), arr.end(), cmp);
+	    cout<<kruskal(arr, numOfNode)<<endl;
+	}
+}
