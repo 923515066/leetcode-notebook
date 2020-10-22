@@ -1,0 +1,43 @@
+// 贪心策略：最近点对匹配，使用栈保存为匹配点(栈中为单调颜色)，如果新节点和栈顶元素匹配，则pop
+
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <stack>
+using namespace std;
+struct position{
+    position(int a, int b):index(a),color(b){}
+    int index;
+    // 1表示黑 0表示白
+    int color;
+};
+
+int main() {
+    int caseNum;
+    cin>>caseNum;
+    getchar();
+    
+    int nodeNum;
+    int temp;
+    for(int i = 0; i < caseNum; i++) {
+        cin>>nodeNum;
+        getchar();
+        nodeNum *= 2;
+        stack<position> stk;
+        int sum = 0;
+        for(int j = 0; j < nodeNum; j++) {
+            cin>>temp;
+            if (!stk.empty() && stk.top().color != temp) {
+                sum += (j - stk.top().index);
+                stk.pop();
+            } else {
+                stk.push(position(j, temp));
+            }
+        }
+        getchar();
+        cout<<sum<<endl;
+    }
+}
