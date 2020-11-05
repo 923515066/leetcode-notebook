@@ -2,6 +2,15 @@
 vector<vector<int>> ans(nodeNum+1, vector<int>(account+1, -1));
 // struct使用 以及优先级队列使用见#1028
 
+//vector内存释放
+// 大括号好像是为了构造一个变量域使得临时变量自动析构
+{
+        vector<vector<int>>().swap(graph);
+}
+
+// 如果一个vector在for中循环使用，resize需要和clear搭配使用
+// clear将vector的内部变量size置0，resize只会通过size判断，初始化数组新增的部分
+
 // 1000
 #include <iostream>
 using namespace std;
