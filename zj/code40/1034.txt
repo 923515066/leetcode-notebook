@@ -1,0 +1,78 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// 使用graph记录出边，也就是单向边
+// dp[i][0/1]表示这个节点涂成白色或者黑色时的最大受益
+// 这里因为是树形结构，通过递归自顶向下dp，当前这个节点的最大受益只和它的子节点相关
+// 初始化dp[i][0] = 0, dp[i][1] = 1
+// 转换方程 if i -> j ,
+//dp[i][1] += dp[j][0], dp[i][0] += max(dp[j][0], dp[j][1])
+void recFunc(int nodeNum, vector<vector<int>>& graph, vector<vector<int>>& dp ) {
+    dp[nodeNum][0] = 0;
+    dp[nodeNum][1] = 1;
+    if (graph[nodeNum].size() == 0) return;
+    for(int i =0; i <graph[nodeNum].size(); i++) {
+        recFunc(graph[nodeNum][i], graph, dp);
+        dp[nodeNum][1] += dp[graph[nodeNum][i]][0];
+        dp[nodeNum][0] += max(dp[graph[nodeNum][i]][0], dp[graph[nodeNum][i]][1]);
+    }
+    
+}
+
+
+int main() {
+    int caseNum;
+    cin>>caseNum;
+    getchar();
+    
+    int nodeNum;
+    int tempa, tempb;
+    vector<vector<int>> graph;
+    vector<vector<int>> dp;
+    for(int i = 0; i < caseNum; i++) {
+        cin>>nodeNum;
+        graph.resize(nodeNum+1, vector<int>());
+        dp.resize(nodeNum+1, vector<int>(2));
+        vector<bool> isRoot(nodeNum+1, true);
+        
+        getchar();
+        for(int j = 1; j <= nodeNum; j++) {
+            dp[j][0] = 0;
+            dp[j][1] = 1;
+        }
+        for(int j = 1; j < nodeNum; j++) {
+        	cin>>tempa>>tempb;
+        	graph[tempa].push_back(tempb);
+        	isRoot[tempb] = false;
+        	getchar();
+        }
+        // 不一定输入的index－1就是根节点，这里只能使用一个数组记录是否有入边判断
+        int rootNodeNum;
+        for(int j = 1; j <= nodeNum; j++) {
+            if (isRoot[j]) {
+                recFunc(j, graph, dp);
+                rootNodeNum = j;
+                break;
+            }
+        }
+        cout<<max(dp[rootNodeNum][0],dp[rootNodeNum][1])<<endl;
+						
+						//graph数组在这里clear(作用应该是将vector内部的size置0)，下一次遍历时再resize
+	      //否则根据resize函数的定义，原vector中前size部分的值不会覆盖初始化
+        graph.clear();
+        dp.clear();
+        
+    }
+    // 这里尝试使用swap释放内存，没用。。。
+    {
+        vector<vector<int>>().swap(graph);
+        // cout<<graph.capacity()<<endl;
+        vector<vector<int>>().swap(dp);
+    }
+}
