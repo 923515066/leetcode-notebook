@@ -1,0 +1,32 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// 计算分裂期望
+// 因为每座桥断裂概率是相互独立的，所以期望可以分开计算
+// 初始化期望E= 1
+// 对于每座桥 newE = (E + 1)*prob + E* (1-prob)
+int main() {
+    int caseNum;
+    cin>>caseNum;
+    getchar();
+    
+    int tempProb, islandNum;
+    double E;
+    for(int i = 0; i < caseNum; i++) {
+        cin>>islandNum;
+        E = 1.0;
+        for(int j = 1; j < islandNum; j++) {
+        	cin>>tempProb;
+            E = (E+1)*tempProb/100 + E*(100-tempProb)/100;
+        }
+        getchar();
+        //cout<<setprecision(6)<<E<<endl;
+        printf("%.6lf\n",E);
+    }
+}
