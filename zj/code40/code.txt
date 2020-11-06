@@ -11,6 +11,33 @@ vector<vector<int>> ans(nodeNum+1, vector<int>(account+1, -1));
 // 如果一个vector在for中循环使用，resize需要和clear搭配使用
 // clear将vector的内部变量size置0，resize只会通过size判断，初始化数组新增的部分
 
+
+// vector排序
+// ddl升序  income降序
+struct Pair{
+    Pair(int n, int d):ddl(n),income(d){}
+    int ddl;
+    int income;
+};
+bool cmp(const Pair&a, const Pair&b) {
+    // ddl升序  income降序
+    if (a.ddl != b.ddl) return a.ddl <b.ddl;
+    else return b.income < a.income;
+}
+vector<vector<int>> arr(numOfEdge, vector<int>(3));
+sort(arr.begin(), arr.end(), cmp);
+
+
+//优先级队列 最小堆
+struct tmp2 //重写仿函数
+{
+    bool operator() (int a, int b) 
+    {
+        return a > b; //看清楚了，这里是最小值优先
+    }
+};
+priority_queue<int, vector<int>, tmp2> queue;
+
 // 1000
 #include <iostream>
 using namespace std;

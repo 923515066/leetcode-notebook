@@ -1,0 +1,76 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+using namespace std;
+struct Pair{
+    Pair(int n, int d):ddl(n),income(d){}
+    int ddl;
+    int income;
+};
+bool cmp(const Pair&a, const Pair&b) {
+    // ddl升序  income降序
+    if (a.ddl != b.ddl) return a.ddl <b.ddl;
+    else return b.income < a.income;
+}
+struct tmp2 //重写仿函数
+{
+    bool operator() (int a, int b) 
+    {
+        return a > b; //看清楚了，这里是最小值优先
+    }
+};
+
+// 对输入的任务序列排序：先按照ddl升序再按照收益降序(第二步不重要，主要是为了后面优先级队列内部减少操作)
+// 优先级队列存放当前执行任务的收益值
+// 当来了一个新的任务，如果还有空闲时间，就直接插入队列
+// 否则如果新的任务比要执行的任务的最小收益(通过队列的top判断)大，则队列pop后push
+// 因为一开始按照ddl升序排列，所以能够保证队列中的所有任务总可以在各自的ddl前完成，不会受到pop push影响
+// 举个例子，队列中任务序号(实际存放的是收益值)按照ddl排序有1 2 3 4 5
+// 如果我们依据优先级pop出1(也就是1收益最小) 新的队列按照ddl排序为 2 3 4 5 6，
+// 每个任务离自己的ddl更远
+// 如果pop出5 则同理为1 2 3 4 6，每个任务相对自己的ddl不变
+
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int workNum;
+	int tempa, tempb;
+	
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>workNum;
+	    getchar();
+        vector<Pair> arr;
+	    
+		// 可能会溢出，日了
+	    long long int sum = 0;
+	    for(int j = 0; j < workNum; j++) {
+	        cin>>tempa>>tempb;
+	        getchar();
+	        arr.push_back(Pair(tempa, tempb));
+	    }
+	    sort(arr.begin(), arr.end(), cmp);
+	    
+	    priority_queue<int, vector<int>, tmp2> queue;
+	    for(int j = 0; j < workNum; j++) {
+	        if (arr[j].ddl > queue.size()) {
+	            queue.push(arr[j].income);
+	        } else if (arr[j].income > queue.top()) {
+                queue.pop();
+                queue.push(arr[j].income);
+            }
+	    }
+	    arr.clear();
+	    while(!queue.empty()) {
+	        sum += queue.top();
+	        queue.pop();
+	    }
+	    cout<< sum<< endl;
+	}
+}

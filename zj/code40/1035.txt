@@ -1,0 +1,58 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+
+// 不需要考虑当前这一月需要生产多少
+// 反过来记录到这个月为止最低的成本(生产成本+存储成本)是多少就行
+// 因为一旦这个月成本比之前的最低成本(包括存储)更低，则对于后面的月份来说，当前月生产加上存储的成本比之前的
+// 最低值加上存储都更低
+// costOfProcAndSave[i] = min(costOfProcAndSave[i-1] + 1, cost[i])
+// costOfProcAndSave[i-1]中可能是第i-1月成本最低，也可能是之前某一个更低对其进行了覆盖，这样使得这个月的成本
+// 计算只和当前月以及上一个月相关，不需要数组记录所有成本，使用变量迭代即可
+
+//  注意sumCost, costOfProcAndSave得设置为long long 否则求和和加1时会溢出
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int nodeNum;
+	// 供应量
+	vector<int> yield;
+	// 生产成本
+	vector<int> cost;
+	int temp;
+	long long int sumCost, costOfProcAndSave;
+	for(int i = 0; i <caseNum; i++) {
+	    cin>>nodeNum;
+	    getchar();
+	    yield.resize(nodeNum);
+	    cost.resize(nodeNum);
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>temp;
+	        cost[j] = temp;
+	    }
+	    getchar();
+	    for(int j = 0; j < nodeNum; j++) {
+	        cin>>temp;
+	        yield[j] = temp;
+	    }
+	    getchar();
+	    
+	    costOfProcAndSave = cost[0];
+	    sumCost = yield[0] * costOfProcAndSave;
+	    for(int j = 1; j < nodeNum; j++) {
+	        costOfProcAndSave = min(costOfProcAndSave+1, (long long int)cost[j]);
+	        sumCost += yield[j] * costOfProcAndSave;
+	    }
+	    yield.clear();
+	    cost.clear();
+	    cout<<sumCost<<endl;
+	}
+}
