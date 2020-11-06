@@ -1,0 +1,35 @@
+给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+ 
+
+示例 1:
+
+输入: [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+示例 2:
+
+输入: [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+
+// currMin 子数组最小乘积值 currMax 表示子数组最大乘积值
+// 思路类似最大求和子数组，但是最大乘积可能通过负负得正的方式得到
+// 多记录一个变量currMin, 如果当前nums[i]是负数，则当currMin为负数时，两者相乘可能得到最大值
+class Solution {
+    public int maxProduct(int[] nums) {
+		int currMax = nums[0], Max = nums[0], currMin = nums[0];
+        for(int i = 1; i <nums.length; i++) {
+            if (nums[i] >= 0) {
+				currMax = Math.max(nums[i], currMax* nums[i]);
+                currMin = Math.min(nums[i], currMin * nums[i]);
+            } else {
+                int oldCurrMax = currMax;
+				currMax = Math.max(nums[i], currMin*nums[i]);
+                currMin = Math.min(nums[i], oldCurrMax * nums[i]);
+            }
+            Max = Math.max(Max, currMax);
+        }
+        return Max;
+    }
+}
