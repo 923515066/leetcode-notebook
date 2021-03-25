@@ -1,0 +1,71 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+using namespace std;
+
+
+// 考虑使用rabin-karp解决
+
+// 整体思路基于KMP，在匹配成功后，indexStr退回到当前匹配初始位置+1(也就是indexStr - lengthPat + 1)
+int main() {
+	int caseNum;
+	cin>> caseNum;
+	getchar();
+	
+	int lengthStr, lengthPat;
+	string str, pat;
+	for(int i = 0; i < caseNum; i++) {
+	    cin>>lengthStr>>lengthPat;
+		// 这里使用getline(cin, str)会runtime error, 可能是字符串长度过长了
+	    getchar();
+	    cin>>str;
+	    getchar();
+	    cin>>pat;
+	    getchar();
+	   // cout<<str.size()<<endl;
+	   // cout<<pat.size()<<endl;
+	   
+	   // 获取next数组
+	   int *next = new int[lengthPat];
+	   int j = 0, k = -1;
+	   next[0] = -1;
+	   while(j < lengthPat-1) {
+	       if (k == -1 || pat[j] == pat[k]) {
+	           j++;
+	           k++;
+	           next[j] = k;
+	       } else {
+	           k = next[k];
+	       }
+	   }
+	   
+	   // kmp匹配
+	   int num = 0;
+	   int indexStr = 0, indexPat = 0;
+	   while(true) {
+    	   while(indexPat < lengthPat && indexStr < lengthStr) {
+    	       //cout<<"str "<<indexStr<<" pat"<<indexPat<<endl;
+    	       if (indexPat == -1 ||  str[indexStr] == pat[indexPat]) {
+    	           indexPat++;
+    	           indexStr++;
+    	       } else {
+    	           indexPat = next[indexPat];
+    	       }
+    	   }
+    	   if (indexPat == lengthPat) {
+    	       num++;
+    	       indexPat = 0;
+    	       indexStr = indexStr - lengthPat + 1;
+    	   } else {
+    	       break;
+    	   }
+	   }
+	   cout<<num<<endl;
+	   delete []next;
+	}
+}
