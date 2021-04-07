@@ -1,0 +1,141 @@
+小团有一个由N个节点组成的二叉树，每个节点有一个权值。定义二叉树每条边的开销为其两端节点权值的乘积，二叉树的总开销即每条边的开销之和。小团按照二叉树的中序遍历依次记录下每个节点的权值，即他记录下了N个数，第i个数表示位于中序遍历第i个位置的节点的权值。之后由于某种原因，小团遗忘了二叉树的具体结构。在所有可能的二叉树中，总开销最小的二叉树被称为最优二叉树。现在，小团请小美求出最优二叉树的总开销。
+
+
+输入描述:
+第一行输入一个整数N（1<=N<=300），表示二叉树的节点数。
+
+第二行输入N个由空格隔开的整数，表示按中序遍历记录下的各个节点的权值，所有权值均为不超过1000的正整数。
+
+
+输出描述:
+输出一个整数，表示最优二叉树的总开销。
+
+
+输入例子1:
+5
+7 6 5 1 3
+
+输出例子1:
+45
+
+例子说明1:
+
+最优二叉树如图所示，总开销为7*1+6*5+5*1+1*3=45。
+
+
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <string.h>
+using namespace std;
+const int maxN = 301;
+int dpArray[maxN][maxN][maxN];
+vector<int>nums(maxN, 0);
+
+// 思路参考题解
+// father父节点表示当前l-r子树选出的根结点的父节点
+// 暂时不清楚有无设置父节点有什么区别。。可能代码整体思路更清晰简洁？
+
+// 我一开始的思路：三维dp最后一维表示l-r的根结点，
+int dp(int l, int r, int father) {
+    if (l > r) return 0;
+    if (dpArray[l][r][father] != -1) return dpArray[l][r][father];
+    int currAns = 1 << 30;
+    for(int i = l; i <= r; i++) {
+        int leftAns = dp(l,i-1,i);
+        int rightAns = dp(i+1,r,i);
+        currAns = min(currAns,
+                      leftAns + rightAns + nums[father] * nums[i]);
+    }
+    dpArray[l][r][father] = currAns;
+    return currAns;
+}
+
+
+int main(int arg, char** args) {
+    int n;
+    cin>>n;
+    for(int i = 0; i < n; i++) {
+        cin>>nums[i+1];
+    }
+    memset(dpArray,-1,sizeof(dpArray));
+    int ans = dp(1,n,0);
+    cout<<ans;
+    return 0;
+}
+
+
+
+
+
+
+// 思路相似，但是超时了，绝了
+// 想法是三维dp最后一维表示l-r的根结点，
+// 然后在当前递归轮次去分别选定左右子树的根结点，然后求值
+// 和上一种想法的区别是，上一种想法把当前选定的根节点传给子树，在子树中确定选定哪一个节点
+// 作为子树根节点
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <string.h>
+using namespace std;
+const int maxN = 301;
+int dpArray[maxN][maxN][maxN];
+vector<int>nums(maxN, 0);
+
+int dp(int l, int r, int root) {
+    //cout<<l<<" "<<r<<" "<<root<<" "<<endl;
+    if (l >= r) {
+        //cout<<0<<endl;
+        return 0;
+    } else if (l+1 ==r) return nums[l] * nums[r];
+    if (dpArray[l][r][root] != -1) {
+        //cout<<dpArray[l][r][root]<<endl;
+        return dpArray[l][r][root];
+    }
+    int currAns = 1 << 30;
+    if (l == root) {
+        for(int j = root+1; j <= r; j++) {
+            currAns = min(currAns, dp(root+1,r,j)+nums[j] * nums[root]);
+            
+        }
+    } else if (r == root) {
+        for(int i = l; i <= root -1; i++) {
+            currAns =min(currAns, dp(l,root-1,i)+nums[i] * nums[root]);
+        }
+    } else {
+        int leftAns = 1 <<30;
+        for(int i = l; i <= root -1; i++) {
+            leftAns = min(leftAns, dp(l,root-1,i) +　nums[i] * nums[root]);
+            
+        }
+        int rightAns = 1 <<30;
+        for(int j = root+1; j <= r; j++) {
+            rightAns = min(rightAns, dp(root+1,r,j) + nums[j] * nums[root]);
+        }
+        currAns = min(currAns, leftAns + rightAns);
+    }
+    
+    //cout<<currAns<<endl;
+    dpArray[l][r][root] = currAns;
+    return currAns;
+}
+
+
+int main(int arg, char** args) {
+    int n;
+    cin>>n;
+    for(int i = 0; i < n; i++) {
+        cin>>nums[i+1];
+    }
+    memset(dpArray,-1,sizeof(dpArray));
+    int ans = 1 << 30;
+    for(int i = 1; i <= n; i++) {
+        ans = min(ans, dp(1,n,i));
+    }
+    cout<<ans;
+    return 0;
+}
+
+
