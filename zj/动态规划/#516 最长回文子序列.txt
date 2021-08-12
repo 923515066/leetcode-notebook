@@ -28,6 +28,29 @@ class Solution {
     public int longestPalindromeSubseq(String s) {
         int size = s.length();
         if (size <= 1) return size;
+        StringBuffer str = new StringBuffer(s);
+        StringBuffer revStr = new StringBuffer(s).reverse();
+        int [][]dp = new int[size+1][size+1];
+        dp[0][0] = 0; dp[0][1] = 0; dp[1][0] = 0;
+        for(int i = 0; i <size; i++) {
+            for(int j = 0; j <size; j++) {
+                if (str.charAt(i) == revStr.charAt(j)) {
+                    dp[i+1][j+1] = dp[i][j]  + 1;
+                } else {
+                    dp[i+1][j+1] = Math.max(dp[i][j+1], dp[i+1][j]);
+                }
+            }
+        }
+        return dp[size][size];
+    }
+}
+
+
+// 或者直接中心对称dp
+class Solution {
+    public int longestPalindromeSubseq(String s) {
+        int size = s.length();
+        if (size <= 1) return size;
         char []str = s.toCharArray();
         int [][]dp = new int[size+1][size+1];
         dp[0][0] = 0; dp[0][1] = 0; dp[1][0] = 0;
