@@ -28,9 +28,53 @@
 拓扑排序也可以通过 BFS 完成。
 
 
+// 2021-08-25温故而知新
+class Solution {
+    int[] status;
+    ArrayList<Integer> []graph;
+    ArrayList<Integer> ansList;
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        status = new int[numCourses];
+        graph = new ArrayList[numCourses];
+        ansList = new ArrayList<>();
+        for(int i = 0; i < numCourses; i++) graph[i] = new ArrayList<>();
+
+        for(int []a: prerequisites) {
+            graph[a[0]].add(a[1]);
+        }
+
+        for(int i = 0; i < numCourses; i++) {
+            if (status[i] == 0) {
+                if (!dfs(i)) return new int[0];
+            }else if (status[i] == 1) {
+                return new int[0];
+            }
+        }
+
+        int []ans = new int[numCourses];
+        for(int i = 0; i < numCourses; i++) ans[i] = ansList.get(i);
+        return ans;
+    }
+
+    public boolean dfs(int course) {
+        if (status[course] == 1) return false;
+        else if (status[course] == 2) return true;
+
+        status[course] = 1;
+        for(int preCourse : graph[course]) {
+            if (!dfs(preCourse)) return false;
+        }
+
+        status[course] = 2;
+        ansList.add(course);
+        return true;
+    }
+}
+
 
 // 思路同802
 // dfs
+// 2020-08-24
 class Solution {
     private int[] status;
     private ArrayList<Integer> []graph;
